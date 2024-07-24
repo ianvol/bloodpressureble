@@ -21,10 +21,4 @@
         android:layout_alignParentBottom="true"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/bottom_nav_menu" />
-
-    <Button
-        android:id="@+id/btn_ua_651BLE"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ua-651BLE" />
 </RelativeLayout>
