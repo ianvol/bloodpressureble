@@ -31,6 +31,12 @@ android {
     }
 }
 
+allprojects {
+    repositories {
+        maven {url 'https://www.jitpack.io'}
+    }
+}
+
 dependencies {
 
     implementation libs.appcompat
@@ -43,4 +49,5 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    implementation libs.appintro
 }

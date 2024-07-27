@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <drawable name="ic_slide1">@drawable/bananas</drawable>
+    <drawable name="ic_slide2">@drawable/blueberries</drawable>
+    <drawable name="ic_slide3">@drawable/peaches</drawable>
+</resources>
