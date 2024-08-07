@@ -37,6 +37,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="31">
+
+        <uses-library
+            android:name="com.samsung.android.sdk.bt"
+            android:required="false" />
+        <uses-library
+            android:name="com.htc.android.bluetooth.le"
+            android:required="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -52,8 +60,8 @@
             </intent-filter>
         </activity>
 
-
         <service android:name=".gatt.BluetoothLeService" />
+        <service android:name=".gatt.BluetoothLeReceive" />
 
     </application>
 
