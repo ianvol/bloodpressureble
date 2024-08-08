@@ -42,7 +42,6 @@ public class BPMeasurement {
                 else {
                     bundle.putString(KEY_UNIT, "kPa");
                 }
-                // Unit
                 offset+=1;
                 bundle.putFloat(KEY_SYSTOLIC, characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_SFLOAT, offset));
                 offset+=2;
@@ -53,7 +52,6 @@ public class BPMeasurement {
             }
             else if(index == flagString.length()-1) {
                 if(key.equals("1")) {
-                    // Time Stamp
                     bundle.putInt(KEY_YEAR, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, offset));
                     offset+=2;
                     bundle.putInt(KEY_MONTH, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, offset));
@@ -80,7 +78,6 @@ public class BPMeasurement {
             }
             else if(index == flagString.length()-2) {
                 if(key.equals("1")) {
-                    // Pulse Rate
                     bundle.putFloat(KEY_PULSE_RATE, characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_SFLOAT, offset));
                     offset+=2;
                 }

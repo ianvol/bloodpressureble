@@ -30,9 +30,6 @@ public class DashboardFragment extends Fragment {
         return root;
     }
 
-    private void refreshBloodPressureLayout() {
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();

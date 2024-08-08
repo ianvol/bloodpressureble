@@ -16,8 +16,6 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class BluetoothLeService extends Service {
@@ -40,11 +38,9 @@ public class BluetoothLeService extends Service {
     public static final String TYPE_CHARACTERISTIC_CHANGED = "Characteristic changed";
     public static final String TYPE_DESCRIPTOR_READ = "Read descriptor";
     public static final String TYPE_DESCRIPTOR_WRITE = "Write descriptor";
-    public static final String TYPE_INDICATION_VALUE = "Indication Value";
 
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothGatt bluetoothGatt;
-    private final ArrayList<HashMap<String, Object>> bloodpressureDataSet = new ArrayList<>();
 
     private final IBinder binder = new LocalBinder();
 
@@ -68,6 +64,14 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
+
+        if (bluetoothGatt != null) {
+            Log.d(TAG, "Closing existing BluetoothGatt connection.");
+            bluetoothGatt.disconnect();
+            bluetoothGatt.close();
+            bluetoothGatt = null;
+        }
+
         try {
             final BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
             bluetoothGatt = device.connectGatt(this, false, bluetoothGattCallback);
@@ -77,6 +81,7 @@ public class BluetoothLeService extends Service {
             return false;
         }
     }
+
 
     public void disconnect() {
         if (bluetoothGatt == null) {
@@ -181,9 +186,6 @@ public class BluetoothLeService extends Service {
         String serviceUuidString = descriptor.getCharacteristic().getService().getUuid().toString();
         String characteristicUuidString = descriptor.getCharacteristic().getUuid().toString();
 
-        String message = "Service: " + serviceUuidString;
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-
         Intent intent = new Intent(ACTION_BLE_SERVICE);
         intent.putExtra(EXTRA_TYPE, type);
         intent.putExtra(EXTRA_SERVICE_UUID, serviceUuidString);
@@ -192,15 +194,6 @@ public class BluetoothLeService extends Service {
         intent.putExtra(EXTRA_STATUS, status);
         sendBroadcast(intent);
         Log.d(TAG, "Broadcast sent: " + type);
-    }
-
-    private void sendBroadcast(String characteristicUuidString, Bundle bundle) {
-        Intent intent = new Intent(ACTION_BLE_SERVICE);
-        intent.putExtra(EXTRA_TYPE, BluetoothLeService.TYPE_INDICATION_VALUE);
-        intent.putExtra(EXTRA_CHARACTERISTIC_UUID, characteristicUuidString);
-        intent.putExtra(EXTRA_VALUE, bundle);
-        sendBroadcast(intent);
-        Log.d(TAG, "Broadcast sent: " + BluetoothLeService.TYPE_INDICATION_VALUE);
     }
 
     public static UUID uuidFromShortString(String uuid) {
