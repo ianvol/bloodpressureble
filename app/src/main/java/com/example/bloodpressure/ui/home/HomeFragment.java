@@ -14,6 +14,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -21,24 +23,29 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.bloodpressure.db.BloodPressureDao;
 import com.example.bloodpressure.gatt.BPMeasurement;
 import com.example.bloodpressure.gatt.BloodPressureAdapter;
 import com.example.bloodpressure.gatt.BloodPressureReading;
 import com.example.bloodpressure.gatt.BluetoothLeService;
 import com.example.bloodpressure.R;
 import com.example.bloodpressure.databinding.FragmentHomeBinding;
-import com.example.bloodpressure.ui.dashboard.DashboardFragment;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,17 +56,19 @@ public class HomeFragment extends Fragment {
     private static final int PERMISSION_REQUEST_BLUETOOTH = 3;
     private static final String TARGET_DEVICE_NAME = "UA-651BLE";
     private static final String TAG = "HomeFragment";
-    private static final long SCAN_INTERVAL_MS = 10000; // 10 seconds
+    private static final long SCAN_INTERVAL_MS = 12000;
 
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
     private FragmentHomeBinding binding;
     private BluetoothLeService bluetoothLeService;
     private boolean isBoundService = false;
-    private boolean isConnected = false;
 
     private BloodPressureAdapter adapter;
     private final List<BloodPressureReading> readings = new ArrayList<>();
+
+    private BloodPressureDao bloodPressureDao;
+    private LineChart lineChart;
 
     private final Handler handler = new Handler();
 
@@ -80,20 +89,18 @@ public class HomeFragment extends Fragment {
         }
     };
 
-
+    @SuppressLint("NotifyDataSetChanged")
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        //final Button scanButton = root.findViewById(R.id.btn_ua_651BLE);
-        //scanButton.setOnClickListener(v -> startBLEScan());
-
-        BluetoothManager bluetoothManager = (BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE);
+        BluetoothManager bluetoothManager = (BluetoothManager) requireActivity().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
         if (bluetoothAdapter == null) {
             Toast.makeText(getActivity(), "Bluetooth not supported on this device", Toast.LENGTH_SHORT).show();
-            getActivity().finish();
+            requireActivity().finish();
         }
 
         if (!bluetoothAdapter.isEnabled()) {
@@ -108,6 +115,21 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new BloodPressureAdapter(readings);
         recyclerView.setAdapter(adapter);
+
+        bloodPressureDao = new BloodPressureDao(getActivity());
+
+        // Load previously saved readings from the database
+        new Thread(() -> {
+            List<BloodPressureReading> savedReadings = bloodPressureDao.getAllReadings();
+            requireActivity().runOnUiThread(() -> {
+                readings.addAll(savedReadings);
+                adapter.notifyDataSetChanged();
+                updateChart();
+            });
+        }).start();
+
+        lineChart = root.findViewById(R.id.line_chart);
+        setupChart();
 
         return root;
     }
@@ -126,49 +148,40 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        try {
-            Log.d("HomeFragment", "BroadcastReceivers unregistered");
-        } catch (IllegalArgumentException e) {
-            Log.e("HomeFragment", "BroadcastReceiver not registered", e);
-        }
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         if (isBoundService) {
             requireActivity().unbindService(serviceConnection);
             isBoundService = false;
         }
-        handler.removeCallbacks(logRunnable);
+        handler.removeCallbacks(scanRunnable);
 
         requireActivity().unregisterReceiver(bloodPressureReceiver);
     }
 
     private void checkPermissions() {
-        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-            }, PERMISSION_REQUEST_BLUETOOTH);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(requireActivity(), new String[]{
+                        Manifest.permission.BLUETOOTH_SCAN,
+                        Manifest.permission.BLUETOOTH_CONNECT,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                }, PERMISSION_REQUEST_BLUETOOTH);
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(requireActivity(), new String[]{
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                }, PERMISSION_REQUEST_BLUETOOTH);
+            }
         }
     }
 
     private void startBLEScan() {
-        if (bluetoothLeScanner == null) {
-            bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
-        }
-        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED ||
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             Log.d(TAG, "Starting BLE scan");
             bluetoothLeScanner.startScan(scanCallback);
             Toast.makeText(getActivity(), "Scanning for BLE devices...", Toast.LENGTH_SHORT).show();
@@ -176,7 +189,6 @@ public class HomeFragment extends Fragment {
             checkPermissions();
         }
     }
-
     private final ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
@@ -190,7 +202,6 @@ public class HomeFragment extends Fragment {
                     boolean success = bluetoothLeService.connect(deviceAddress);
                     if (success) {
                         Log.i(TAG, "Connected to device: " + deviceAddress);
-                        //navigateToDashboard();
                     } else {
                         Log.e(TAG, "Failed to connect to device: " + deviceAddress);
                     }
@@ -200,7 +211,6 @@ public class HomeFragment extends Fragment {
             }
         }
     };
-
 
     private final BroadcastReceiver bloodPressureReceiver = new BroadcastReceiver() {
         @SuppressLint("NotifyDataSetChanged")
@@ -216,6 +226,10 @@ public class HomeFragment extends Fragment {
                 readings.add(reading);
                 adapter.notifyDataSetChanged();
 
+                new Thread(() -> bloodPressureDao.insertReading(systolic, diastolic, pulse)).start();
+
+                updateChart();
+
                 Log.d(TAG, "Blood Pressure Readings - Systolic: " + systolic +
                         ", Diastolic: " + diastolic +
                         ", Pulse: " + pulse);
@@ -223,37 +237,63 @@ public class HomeFragment extends Fragment {
         }
     };
 
-    private void navigateToDashboard() {
-        getParentFragmentManager().beginTransaction().replace(R.id.navigation_dashboard, new DashboardFragment()).commit();
+    private void setupChart() {
+        lineChart.getDescription().setEnabled(false);
+        lineChart.setTouchEnabled(true);
+        lineChart.setDragEnabled(true);
+        lineChart.setScaleEnabled(true);
+        lineChart.setPinchZoom(true);
+
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.setDrawGridLines(false);
+
+        YAxis rightAxis = lineChart.getAxisRight();
+        rightAxis.setEnabled(false);
     }
 
+    private void updateChart() {
+        List<Entry> systolicEntries = new ArrayList<>();
+        List<Entry> diastolicEntries = new ArrayList<>();
+        List<Entry> pulseEntries = new ArrayList<>();
 
-    private void refreshBloodPressureLayout() {
-    }
-
-    private final Runnable logRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (isConnected) {
-                Log.i(TAG, "Device is connected");
-                if (bluetoothLeService != null) {
-                    //bluetoothLeService.readBloodPressureData();
-                }
-                handler.postDelayed(this, 2000); // Repeat every 2 seconds
-            }
+        for (int i = 0; i < readings.size(); i++) {
+            BloodPressureReading reading = readings.get(i);
+            systolicEntries.add(new Entry(i, reading.getSystolic()));
+            diastolicEntries.add(new Entry(i, reading.getDiastolic()));
+            pulseEntries.add(new Entry(i, reading.getPulse()));
         }
-    };
+
+        LineData lineData = getLineData(systolicEntries, diastolicEntries, pulseEntries);
+        lineChart.setData(lineData);
+        lineChart.invalidate();
+    }
+
+    private static @NonNull LineData getLineData(List<Entry> systolicEntries, List<Entry> diastolicEntries, List<Entry> pulseEntries) {
+        LineDataSet systolicDataSet = new LineDataSet(systolicEntries, "Systolic");
+        systolicDataSet.setColor(Color.RED);
+        systolicDataSet.setLineWidth(2f);
+        systolicDataSet.setCircleColor(Color.RED);
+
+        LineDataSet diastolicDataSet = new LineDataSet(diastolicEntries, "Diastolic");
+        diastolicDataSet.setColor(Color.BLUE);
+        diastolicDataSet.setLineWidth(2f);
+        diastolicDataSet.setCircleColor(Color.BLUE);
+
+        LineDataSet pulseDataSet = new LineDataSet(pulseEntries, "Pulse");
+        pulseDataSet.setColor(Color.GREEN);
+        pulseDataSet.setLineWidth(2f);
+        pulseDataSet.setCircleColor(Color.GREEN);
+
+        return new LineData(systolicDataSet, diastolicDataSet, pulseDataSet);
+    }
 
     private final Runnable scanRunnable = new Runnable() {
         @Override
         public void run() {
-            if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "Starting BLE scan");
-                bluetoothLeScanner.startScan(scanCallback);
-                Toast.makeText(getActivity(), "Scanning for BLE devices...", Toast.LENGTH_SHORT).show();
-            } else {
-                checkPermissions();
-            }
+            startBLEScan();
             handler.postDelayed(this, SCAN_INTERVAL_MS);
         }
     };

@@ -1,4 +1,4 @@
-package com.example.bloodpressure.gatt;// BloodPressureAdapter.java
+package com.example.bloodpressure.gatt;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
