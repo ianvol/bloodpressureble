@@ -13,6 +13,7 @@ mpandroidchart = "v3.1.0"
 navigationFragment = "2.6.0"
 navigationUi = "2.6.0"
 welcome = "1.4.1"
+roomCommon = "2.6.1"
 
 [libraries]
 appintro = { module = "com.github.AppIntro:AppIntro", version.ref = "appintro" }
@@ -28,6 +29,7 @@ mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 welcome = { module = "com.stephentuso:welcome", version.ref = "welcome" }
+room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

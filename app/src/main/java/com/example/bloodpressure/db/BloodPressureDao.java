@@ -28,6 +28,28 @@ public class BloodPressureDao {
         database.insert(BloodPressureDbHelper.TABLE_NAME, null, values);
     }
 
+    public List<BloodPressureReading> getLast8Readings() {
+        List<BloodPressureReading> readings = new ArrayList<>();
+
+        String query = "SELECT * FROM " + BloodPressureDbHelper.TABLE_NAME +
+                " ORDER BY " + BloodPressureDbHelper.COLUMN_TIMESTAMP + " DESC LIMIT 8";
+
+        Cursor cursor = database.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                float systolic = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_SYSTOLIC));
+                float diastolic = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_DIASTOLIC));
+                float pulse = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_PULSE));
+
+                BloodPressureReading reading = new BloodPressureReading(systolic, diastolic, pulse);
+                readings.add(reading);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return readings;
+    }
+
     public List<BloodPressureReading> getAllReadings() {
         List<BloodPressureReading> readings = new ArrayList<>();
         Cursor cursor = database.query(BloodPressureDbHelper.TABLE_NAME, null, null, null, null, null, BloodPressureDbHelper.COLUMN_TIMESTAMP + " DESC");

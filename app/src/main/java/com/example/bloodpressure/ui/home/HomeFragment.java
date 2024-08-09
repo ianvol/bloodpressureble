@@ -26,7 +26,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -49,7 +48,6 @@ import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -122,6 +120,7 @@ public class HomeFragment extends Fragment {
         new Thread(() -> {
             List<BloodPressureReading> savedReadings = bloodPressureDao.getAllReadings();
             requireActivity().runOnUiThread(() -> {
+                readings.clear(); // Clear before loading - avoid duplication
                 readings.addAll(savedReadings);
                 adapter.notifyDataSetChanged();
                 updateChart();
@@ -220,7 +219,7 @@ public class HomeFragment extends Fragment {
             if (bundle != null) {
                 float systolic = bundle.getFloat(BPMeasurement.KEY_SYSTOLIC);
                 float diastolic = bundle.getFloat(BPMeasurement.KEY_DIASTOLIC);
-                float pulse = bundle.getFloat(BPMeasurement.KEY_PULSE);
+                float pulse = bundle.getFloat(BPMeasurement.KEY_PULSE_RATE);
 
                 BloodPressureReading reading = new BloodPressureReading(systolic, diastolic, pulse);
                 readings.add(reading);
@@ -246,6 +245,7 @@ public class HomeFragment extends Fragment {
 
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setAvoidFirstLastClipping(true);
 
         YAxis leftAxis = lineChart.getAxisLeft();
         leftAxis.setDrawGridLines(false);
