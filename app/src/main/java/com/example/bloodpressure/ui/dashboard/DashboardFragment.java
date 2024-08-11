@@ -1,7 +1,6 @@
 package com.example.bloodpressure.ui.dashboard;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.bloodpressure.R;
 import com.example.bloodpressure.databinding.FragmentDashboardBinding;
 import com.example.bloodpressure.db.BloodPressureDao;
 import com.example.bloodpressure.gatt.BloodPressureReading;
@@ -49,36 +49,34 @@ public class DashboardFragment extends Fragment {
     }
 
     private void loadAverageReading() {
-        new Thread(() -> {
-            // Access database and get last 8 readings
-            BloodPressureDao dao = new BloodPressureDao(getActivity());
-            List<BloodPressureReading> last8Readings = dao.getLast8Readings();
-            dao.close();
+        BloodPressureDao dao = new BloodPressureDao(getActivity());
+        List<BloodPressureReading> last8Readings = dao.getLast8Readings();
+        dao.close();
 
-            // Calculate average, disregarding any readings with a value of 2047
-            float totalSystolic = 0;
-            float totalDiastolic = 0;
-            float totalPulse = 0;
-            int count = 0;
+        float totalSystolic = 0;
+        float totalDiastolic = 0;
+        float totalPulse = 0;
+        int count = 0;
 
-            for (BloodPressureReading reading : last8Readings) {
-                if (reading.getSystolic() != 2047 && reading.getDiastolic() != 2047 && reading.getPulse() != 2047) {
-                    totalSystolic += reading.getSystolic();
-                    totalDiastolic += reading.getDiastolic();
-                    totalPulse += reading.getPulse();
-                    count++;
-                }
+        for (BloodPressureReading reading : last8Readings) {
+            if (reading.getSystolic() != 2047 && reading.getDiastolic() != 2047 && reading.getPulse() != 2047) {
+                totalSystolic += reading.getSystolic();
+                totalDiastolic += reading.getDiastolic();
+                totalPulse += reading.getPulse();
+                count++;
             }
+        }
 
-            final float averageSystolic = count > 0 ? totalSystolic / count : 0;
-            final float averageDiastolic = count > 0 ? totalDiastolic / count : 0;
-            final float averagePulse = count > 0 ? totalPulse / count : 0;
+        final float averageSystolic = count > 0 ? totalSystolic / count : 0;
+        final float averageDiastolic = count > 0 ? totalDiastolic / count : 0;
+        final float averagePulse = count > 0 ? totalPulse / count : 0;
 
-            // Update the UI on the main thread
-            requireActivity().runOnUiThread(() -> {
-                Log.e(TAG, "Systolic: " + averageSystolic);
-                Log.e(TAG, "Diastolic: " + averageDiastolic);
-            });
-        }).start();
+        TextView systolicTextView = binding.getRoot().findViewById(R.id.text_average_systolic);
+        TextView diastolicTextView = binding.getRoot().findViewById(R.id.text_average_diastolic);
+        TextView pulseTextView = binding.getRoot().findViewById(R.id.text_average_pulse);
+
+        systolicTextView.setText("Average Systolic: " + averageSystolic);
+        diastolicTextView.setText("Average Diastolic: " + averageDiastolic);
+        pulseTextView.setText("Average Pulse: " + averagePulse);
     }
 }
