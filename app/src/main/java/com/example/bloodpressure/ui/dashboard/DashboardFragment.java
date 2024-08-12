@@ -1,5 +1,6 @@
 package com.example.bloodpressure.ui.dashboard;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,6 @@ import java.util.List;
 public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
-    private DashboardViewModel dashboardViewModel;
 
     private static final String TAG = "DashboardFragment";
 
@@ -29,13 +29,10 @@ public class DashboardFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         BloodPressureDao dao = new BloodPressureDao(getActivity());
         DashboardViewModelFactory factory = new DashboardViewModelFactory(dao);
-        dashboardViewModel = new ViewModelProvider(this, factory).get(DashboardViewModel.class);
+        new ViewModelProvider(this, factory).get(DashboardViewModel.class);
 
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         loadAverageReading();
 
@@ -48,6 +45,7 @@ public class DashboardFragment extends Fragment {
         binding = null;
     }
 
+    @SuppressLint("DefaultLocale")
     private void loadAverageReading() {
         BloodPressureDao dao = new BloodPressureDao(getActivity());
         List<BloodPressureReading> last8Readings = dao.getLast8Readings();
@@ -75,8 +73,8 @@ public class DashboardFragment extends Fragment {
         TextView diastolicTextView = binding.getRoot().findViewById(R.id.text_average_diastolic);
         TextView pulseTextView = binding.getRoot().findViewById(R.id.text_average_pulse);
 
-        systolicTextView.setText("Average Systolic: " + averageSystolic);
-        diastolicTextView.setText("Average Diastolic: " + averageDiastolic);
-        pulseTextView.setText("Average Pulse: " + averagePulse);
+        systolicTextView.setText(String.format("Average Systolic: %.1f", averageSystolic));
+        diastolicTextView.setText(String.format("Average Diastolic: %.1f", averageDiastolic));
+        pulseTextView.setText(String.format("Average Pulse: %.1f", averagePulse));
     }
 }
