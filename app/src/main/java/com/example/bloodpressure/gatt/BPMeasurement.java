@@ -6,16 +6,15 @@ import static com.example.bloodpressure.base.GattService.KEY_IRREGULAR_PULSE_DET
 import static com.example.bloodpressure.base.GattService.KEY_MEAS_ARTERIAL_PRESSURE;
 import static com.example.bloodpressure.base.GattService.KEY_MINUTES;
 import static com.example.bloodpressure.base.GattService.KEY_MONTH;
-import static com.example.bloodpressure.base.GattService.KEY_PULSE_RATE;
 import static com.example.bloodpressure.base.GattService.KEY_SECONDS;
 import static com.example.bloodpressure.base.GattService.KEY_YEAR;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Bundle;
-import android.util.Log;
+
+import com.example.bloodpressure.base.GattService;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -24,7 +23,7 @@ public class BPMeasurement {
     public static final String KEY_UNIT = "unit";
     public static final String KEY_SYSTOLIC = "systolic";
     public static final String KEY_DIASTOLIC = "diastolic";
-    public static final String KEY_PULSE = "pulse";
+    public static final String KEY_PULSE_RATE = "pulse";
 
     public static Bundle readCharacteristic(BluetoothGattCharacteristic characteristic) {
 
@@ -78,7 +77,7 @@ public class BPMeasurement {
             }
             else if(index == flagString.length()-2) {
                 if(key.equals("1")) {
-                    bundle.putFloat(KEY_PULSE_RATE, characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_SFLOAT, offset));
+                    bundle.putFloat(GattService.KEY_PULSE_RATE, characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_SFLOAT, offset));
                     offset+=2;
                 }
             }
