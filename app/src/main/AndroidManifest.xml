@@ -51,7 +51,7 @@
             android:label="@string/app_name">
         </activity>
 
-        <activity android:name=".WelcomeActivity"
+        <activity android:name=".LoginActivity"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -61,7 +61,6 @@
         </activity>
 
         <service android:name=".gatt.BluetoothLeService" />
-        <service android:name=".gatt.BluetoothLeReceive" />
 
     </application>
 
