@@ -220,18 +220,27 @@ public class HomeFragment extends Fragment {
                 float systolic = bundle.getFloat(BPMeasurement.KEY_SYSTOLIC);
                 float diastolic = bundle.getFloat(BPMeasurement.KEY_DIASTOLIC);
                 float pulse = bundle.getFloat(BPMeasurement.KEY_PULSE_RATE);
+                int year = bundle.getInt(BPMeasurement.KEY_YEAR);
+                int month = bundle.getInt(BPMeasurement.KEY_MONTH);
+                int day = bundle.getInt(BPMeasurement.KEY_DAY);
+                int hours = bundle.getInt(BPMeasurement.KEY_HOURS);
+                int minutes = bundle.getInt(BPMeasurement.KEY_MINUTES);
+                int seconds = bundle.getInt(BPMeasurement.KEY_SECONDS);
 
-                BloodPressureReading reading = new BloodPressureReading(systolic, diastolic, pulse);
+                BloodPressureReading reading = new BloodPressureReading(systolic, diastolic, pulse, year, month, day, hours, minutes, seconds);
                 readings.add(reading);
                 adapter.notifyDataSetChanged();
 
-                new Thread(() -> bloodPressureDao.insertReading(systolic, diastolic, pulse)).start();
+                @SuppressLint("DefaultLocale") String dateTime = String.format("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hours, minutes, seconds);
+
+                new Thread(() -> bloodPressureDao.insertReading(systolic, diastolic, pulse, dateTime)).start();
 
                 updateChart();
 
                 Log.d(TAG, "Blood Pressure Readings - Systolic: " + systolic +
                         ", Diastolic: " + diastolic +
                         ", Pulse: " + pulse);
+                Log.d(TAG, "Date: " + dateTime);
             }
         }
     };
