@@ -118,7 +118,7 @@ public class HomeFragment extends Fragment {
 
         // Load previously saved readings from the database
         new Thread(() -> {
-            List<BloodPressureReading> savedReadings = bloodPressureDao.getAllReadings();
+            List<BloodPressureReading> savedReadings = bloodPressureDao.getLast8Readings();
             requireActivity().runOnUiThread(() -> {
                 readings.clear(); // Clear before loading - avoid duplication
                 readings.addAll(savedReadings);

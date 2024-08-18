@@ -60,6 +60,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".SelectionActivity"
+            android:exported="true">
+        </activity>
+
         <service android:name=".gatt.BluetoothLeService" />
 
     </application>

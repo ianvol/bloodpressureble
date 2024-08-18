@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
 
             boolean isAuthenticated = authenticateUser(username, pass);
             if (isAuthenticated) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, SelectionActivity.class);
                 startActivity(intent);
                 finish(); // End previous cleanly
             } else {
@@ -33,7 +33,5 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private boolean authenticateUser(String username, String password) {
-        return true;
-    }
+    private boolean authenticateUser(String username, String password) { return true; } // Default true for now
 }
