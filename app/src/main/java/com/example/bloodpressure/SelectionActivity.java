@@ -50,7 +50,7 @@ public class SelectionActivity extends AppCompatActivity {
     private void moveActivity() {
         Intent intent = new Intent(SelectionActivity.this, MainActivity.class);
         startActivity(intent);
-        finish(); // End previous cleanly
+        finish();
     }
 
     private void moveActivityDashboard() {
@@ -65,7 +65,7 @@ public class SelectionActivity extends AppCompatActivity {
             Class<?> WelcomeActivity = Class.forName("com.example.bloodpressure.WelcomeActivity");
             Intent intent = new Intent(SelectionActivity.this, WelcomeActivity);
             startActivity(intent);
-            finish(); // End previous cleanly
+            finish();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

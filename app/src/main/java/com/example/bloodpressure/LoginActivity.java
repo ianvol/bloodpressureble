@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
 
             boolean isAuthenticated = authenticateUser(username, pass);
             if (isAuthenticated) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, SelectionActivity.class);
                 startActivity(intent);
                 finish(); // End previous cleanly
             } else {
