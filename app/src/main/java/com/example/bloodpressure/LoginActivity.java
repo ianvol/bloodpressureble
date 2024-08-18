@@ -33,7 +33,5 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private boolean authenticateUser(String username, String password) {
-        return true;
-    }
+    private boolean authenticateUser(String username, String password) { return true; } // Default true for now
 }

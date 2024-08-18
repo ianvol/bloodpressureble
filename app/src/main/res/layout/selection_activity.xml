@@ -1,0 +1,164 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+	<com.google.android.material.bottomnavigation.BottomNavigationView
+		android:id="@+id/nav_view"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:background="?android:attr/windowBackground"
+		app:menu="@menu/bottom_nav_menu"
+		android:visibility="gone" />
+
+
+	<FrameLayout
+    android:id="@+id/top_left_square_container"
+    android:layout_width="150dp"
+    android:layout_height="150dp"
+    android:layout_margin="8dp"
+    android:layout_marginStart="76dp"
+    android:layout_marginTop="312dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+		<View
+			android:id="@+id/top_left_square"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@android:color/holo_orange_dark"
+			android:clickable="true"
+			android:focusable="true"
+			android:textAlignment="center" />
+
+		<TextView
+			android:id="@+id/square_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:text="Measure Blood Pressure"
+			android:textAlignment="center"
+			android:textColor="@android:color/white"
+			android:textSize="18sp"
+			android:textStyle="bold" />
+</FrameLayout>
+
+
+<FrameLayout
+    android:id="@+id/top_right_square_container"
+    android:layout_width="150dp"
+    android:layout_height="150dp"
+    android:layout_margin="8dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+
+    <View
+        android:id="@+id/top_right_square"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent"
+        android:clickable="true"
+        android:focusable="true" />
+
+
+	<TextView
+		android:id="@+id/square_text_right"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:text="See graph + average reading"
+		android:textAlignment="center"
+		android:textColor="@android:color/white"
+		android:textSize="18sp"
+		android:textStyle="bold" />
+</FrameLayout>
+
+<FrameLayout
+    android:id="@+id/bottom_left_square_container"
+    android:layout_width="150dp"
+    android:layout_height="150dp"
+    android:layout_margin="8dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent">
+
+
+	<View
+		android:id="@+id/bottom_left_square"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@color/colorPrimaryDark"
+		android:clickable="true"
+		android:focusable="true" />
+
+
+	<TextView
+		android:id="@+id/square_text_left"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:text="See Introduction Again"
+		android:textAlignment="center"
+		android:textColor="@android:color/white"
+		android:textSize="18sp"
+		android:textStyle="bold" />
+</FrameLayout>
+
+
+<FrameLayout
+    android:id="@+id/bottom_right_square_container"
+    android:layout_width="150dp"
+    android:layout_height="150dp"
+    android:layout_margin="8dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent">
+
+    <View
+        android:id="@+id/bottom_right_square"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/holo_green_dark"
+        android:clickable="true"
+        android:focusable="true" />
+
+	<TextView
+		android:id="@+id/square_text_right_bottom"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:text="My Details"
+		android:textAlignment="center"
+		android:textColor="@android:color/white"
+		android:textSize="18sp"
+		android:textStyle="bold" />
+</FrameLayout>
+
+
+    <fragment
+        android:id="@+id/nav_host_fragment_activity_main"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/mobile_navigation" />
+
+	<TextView
+		android:id="@+id/textView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Welcome to your blood pressure monitoring app! What would you like to do first?"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		android:textAlignment="center"
+		android:textSize="18sp"
+		android:textColor="@android:color/black"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
