@@ -23,11 +23,12 @@
         app:cardBackgroundColor="#F3F4F6"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
+        app:layout_constraintBottom_toTopOf="@id/card_bullet_points_1"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.15"
+        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/card_bullet_points_1"
-        app:layout_constraintHeight_percent="0.15"
         app:layout_constraintWidth_percent="0.8">
 
         <TextView
@@ -43,31 +44,6 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/card_bullet_points_1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        app:cardBackgroundColor="#F3F4F6"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/card_systolic"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/card_diastolic"
-        app:layout_constraintHeight_percent="0.15"
-        app:layout_constraintWidth_percent="0.8">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:lineSpacingExtra="4dp"
-            android:text="• Bullet Point 1\n• Bullet Point 2\n• Bullet Point 3"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
         android:id="@+id/card_diastolic"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -75,11 +51,12 @@
         app:cardBackgroundColor="#F3F4F6"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/card_bullet_points_1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/card_bullet_points_2"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.15"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_bullet_points_1"
         app:layout_constraintWidth_percent="0.8">
 
         <TextView
@@ -101,11 +78,12 @@
         app:cardBackgroundColor="#F3F4F6"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/card_diastolic"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.15"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_diastolic"
         app:layout_constraintWidth_percent="0.8">
 
         <TextView
@@ -113,7 +91,33 @@
             android:layout_height="wrap_content"
             android:gravity="start"
             android:lineSpacingExtra="4dp"
-            android:text="• Bullet Point 1\n• Bullet Point 2\n• Bullet Point 3"
+            android:text="• Bullet Point 1\n• Bullet Point 2"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_bullet_points_1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        app:cardBackgroundColor="#F3F4F6"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toTopOf="@id/card_diastolic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.15"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_systolic"
+        app:layout_constraintWidth_percent="0.8">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:lineSpacingExtra="4dp"
+            android:text="• Bullet Point 1\n• Bullet Point 2"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
     </androidx.cardview.widget.CardView>

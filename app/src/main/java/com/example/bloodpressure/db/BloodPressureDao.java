@@ -54,7 +54,11 @@ public class BloodPressureDao {
                 int seconds = Integer.parseInt(dateTimeParts[5]);
 
                 BloodPressureReading reading = new BloodPressureReading(systolic, diastolic, pulse, year, month, day, hours, minutes, seconds);
-                readings.add(reading);
+
+                if (systolic != 2047 || diastolic != 2047) {
+                    readings.add(reading);
+                }
+
             } while (cursor.moveToNext());
         }
         cursor.close();
