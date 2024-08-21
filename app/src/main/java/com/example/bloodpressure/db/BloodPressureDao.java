@@ -154,6 +154,115 @@ public class BloodPressureDao {
         return readings;
     }
 
+    public List<BloodPressureReading> getReadingsLast24Hours() {
+        List<BloodPressureReading> readings = new ArrayList<>();
+
+        String query = "SELECT * FROM " + BloodPressureDbHelper.TABLE_NAME +
+                " WHERE " + BloodPressureDbHelper.COLUMN_DATE_TIME + " >= datetime('now', '-1 day')" +
+                " ORDER BY " + BloodPressureDbHelper.COLUMN_DATE_TIME + " DESC";
+
+        Cursor cursor = database.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                float systolic = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_SYSTOLIC));
+                float diastolic = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_DIASTOLIC));
+                float pulse = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_PULSE_RATE));
+                String dateTime = cursor.getString(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_DATE_TIME));
+
+                String[] dateTimeParts = dateTime.split("[- :]");
+                int year = Integer.parseInt(dateTimeParts[0]);
+                int month = Integer.parseInt(dateTimeParts[1]);
+                int day = Integer.parseInt(dateTimeParts[2]);
+                int hours = Integer.parseInt(dateTimeParts[3]);
+                int minutes = Integer.parseInt(dateTimeParts[4]);
+                int seconds = Integer.parseInt(dateTimeParts[5]);
+
+                BloodPressureReading reading = new BloodPressureReading(systolic, diastolic, pulse, year, month, day, hours, minutes, seconds);
+
+                if (systolic != 2047 || diastolic != 2047) {
+                    readings.add(reading);
+                }
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return readings;
+    }
+
+    public List<BloodPressureReading> getReadingsLast72Hours() {
+        List<BloodPressureReading> readings = new ArrayList<>();
+
+        String query = "SELECT * FROM " + BloodPressureDbHelper.TABLE_NAME +
+                " WHERE " + BloodPressureDbHelper.COLUMN_DATE_TIME + " >= datetime('now', '-3 days')" +
+                " ORDER BY " + BloodPressureDbHelper.COLUMN_DATE_TIME + " DESC";
+
+        Cursor cursor = database.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                float systolic = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_SYSTOLIC));
+                float diastolic = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_DIASTOLIC));
+                float pulse = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_PULSE_RATE));
+                String dateTime = cursor.getString(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_DATE_TIME));
+
+                String[] dateTimeParts = dateTime.split("[- :]");
+                int year = Integer.parseInt(dateTimeParts[0]);
+                int month = Integer.parseInt(dateTimeParts[1]);
+                int day = Integer.parseInt(dateTimeParts[2]);
+                int hours = Integer.parseInt(dateTimeParts[3]);
+                int minutes = Integer.parseInt(dateTimeParts[4]);
+                int seconds = Integer.parseInt(dateTimeParts[5]);
+
+                BloodPressureReading reading = new BloodPressureReading(systolic, diastolic, pulse, year, month, day, hours, minutes, seconds);
+
+                if (systolic != 2047 || diastolic != 2047) {
+                    readings.add(reading);
+                }
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return readings;
+    }
+
+    public List<BloodPressureReading> getReadingsLast7Days() {
+        List<BloodPressureReading> readings = new ArrayList<>();
+
+        String query = "SELECT * FROM " + BloodPressureDbHelper.TABLE_NAME +
+                " WHERE " + BloodPressureDbHelper.COLUMN_DATE_TIME + " >= datetime('now', '-7 days')" +
+                " ORDER BY " + BloodPressureDbHelper.COLUMN_DATE_TIME + " DESC";
+
+        Cursor cursor = database.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                float systolic = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_SYSTOLIC));
+                float diastolic = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_DIASTOLIC));
+                float pulse = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_PULSE_RATE));
+                String dateTime = cursor.getString(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_DATE_TIME));
+
+                String[] dateTimeParts = dateTime.split("[- :]");
+                int year = Integer.parseInt(dateTimeParts[0]);
+                int month = Integer.parseInt(dateTimeParts[1]);
+                int day = Integer.parseInt(dateTimeParts[2]);
+                int hours = Integer.parseInt(dateTimeParts[3]);
+                int minutes = Integer.parseInt(dateTimeParts[4]);
+                int seconds = Integer.parseInt(dateTimeParts[5]);
+
+                BloodPressureReading reading = new BloodPressureReading(systolic, diastolic, pulse, year, month, day, hours, minutes, seconds);
+
+                if (systolic != 2047 || diastolic != 2047) {
+                    readings.add(reading);
+                }
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return readings;
+    }
+
+
     public void close() {
         dbHelper.close();
     }
