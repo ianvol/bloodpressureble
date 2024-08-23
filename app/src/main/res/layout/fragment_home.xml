@@ -80,4 +80,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <Spinner
+        android:id="@+id/spinner_times"
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        android:dropDownWidth="match_parent"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="654dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

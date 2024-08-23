@@ -23,6 +23,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -48,6 +51,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -116,20 +120,24 @@ public class HomeFragment extends Fragment {
 
         bloodPressureDao = new BloodPressureDao(getActivity());
 
-        // Load previously saved readings from the database
-        new Thread(() -> {
-            List<BloodPressureReading> savedReadings = bloodPressureDao.getLast8Readings();
-            BloodPressureReading lastReading = bloodPressureDao.getLatestReading();
-            requireActivity().runOnUiThread(() -> {
-                readings.clear(); // Clear before loading - avoid duplication
-                readings.addAll(savedReadings);
-                adapter.notifyDataSetChanged();
-                updateChart();
-            });
-        }).start();
+        loadReadingsData("24 hours"); // Default upon loading
 
-        lineChart = root.findViewById(R.id.line_chart);
-        setupChart();
+        Spinner spinnerTimes = root.findViewById(R.id.spinner_times);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(requireActivity(), R.array.times, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerTimes.setAdapter(spinnerAdapter);
+
+        spinnerTimes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String selectedTime = parentView.getItemAtPosition(position).toString();
+                loadReadingsData(selectedTime);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) { }
+        });
+
+        //bloodPressureDao.logAllTimestamps(); // For debugging readings
 
         return root;
     }
@@ -236,8 +244,6 @@ public class HomeFragment extends Fragment {
 
                 new Thread(() -> bloodPressureDao.insertReading(systolic, diastolic, pulse, dateTime)).start();
 
-                updateChart();
-
                 Log.d(TAG, "Blood Pressure Readings - Systolic: " + systolic +
                         ", Diastolic: " + diastolic +
                         ", Pulse: " + pulse);
@@ -246,58 +252,29 @@ public class HomeFragment extends Fragment {
         }
     };
 
-    private void setupChart() {
-        lineChart.getDescription().setEnabled(false);
-        lineChart.setTouchEnabled(true);
-        lineChart.setDragEnabled(true);
-        lineChart.setScaleEnabled(true);
-        lineChart.setPinchZoom(true);
+    @SuppressLint("NotifyDataSetChanged")
+    private void loadReadingsData(String timeRange) {
+        new Thread(() -> {
+            List<BloodPressureReading> filteredReadings = new ArrayList<>();
 
-        XAxis xAxis = lineChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setAvoidFirstLastClipping(true);
-
-        YAxis leftAxis = lineChart.getAxisLeft();
-        leftAxis.setDrawGridLines(false);
-
-        YAxis rightAxis = lineChart.getAxisRight();
-        rightAxis.setEnabled(false);
-    }
-
-    private void updateChart() {
-        List<Entry> systolicEntries = new ArrayList<>();
-        List<Entry> diastolicEntries = new ArrayList<>();
-        List<Entry> pulseEntries = new ArrayList<>();
-
-        for (int i = 0; i < readings.size(); i++) {
-            BloodPressureReading reading = readings.get(i);
-            systolicEntries.add(new Entry(i, reading.getSystolic()));
-            diastolicEntries.add(new Entry(i, reading.getDiastolic()));
-            pulseEntries.add(new Entry(i, reading.getPulse()));
-        }
-
-        LineData lineData = getLineData(systolicEntries, diastolicEntries, pulseEntries);
-        lineChart.setData(lineData);
-        lineChart.invalidate();
-    }
-
-    private static @NonNull LineData getLineData(List<Entry> systolicEntries, List<Entry> diastolicEntries, List<Entry> pulseEntries) {
-        LineDataSet systolicDataSet = new LineDataSet(systolicEntries, "Systolic");
-        systolicDataSet.setColor(Color.RED);
-        systolicDataSet.setLineWidth(2f);
-        systolicDataSet.setCircleColor(Color.RED);
-
-        LineDataSet diastolicDataSet = new LineDataSet(diastolicEntries, "Diastolic");
-        diastolicDataSet.setColor(Color.BLUE);
-        diastolicDataSet.setLineWidth(2f);
-        diastolicDataSet.setCircleColor(Color.BLUE);
-
-        LineDataSet pulseDataSet = new LineDataSet(pulseEntries, "Pulse");
-        pulseDataSet.setColor(Color.GREEN);
-        pulseDataSet.setLineWidth(2f);
-        pulseDataSet.setCircleColor(Color.GREEN);
-
-        return new LineData(systolicDataSet, diastolicDataSet, pulseDataSet);
+            switch (timeRange) {
+                case "24 hours":
+                    filteredReadings = bloodPressureDao.getReadingsLast24Hours();
+                    break;
+                case "72 hours":
+                    filteredReadings = bloodPressureDao.getReadingsLast72Hours();
+                    break;
+                case "1 week":
+                    filteredReadings = bloodPressureDao.getReadingsLast7Days();
+                    break;
+            }
+            List<BloodPressureReading> finalFilteredReadings = filteredReadings;
+            requireActivity().runOnUiThread(() -> {
+                readings.clear();
+                readings.addAll(finalFilteredReadings);
+                adapter.notifyDataSetChanged();
+            });
+        }).start();
     }
 
     private final Runnable scanRunnable = new Runnable() {
