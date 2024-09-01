@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,15 +43,9 @@ import com.example.bloodpressure.gatt.BluetoothLeService;
 import com.example.bloodpressure.R;
 import com.example.bloodpressure.databinding.FragmentHomeBinding;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -221,7 +215,7 @@ public class HomeFragment extends Fragment {
     };
 
     private final BroadcastReceiver bloodPressureReceiver = new BroadcastReceiver() {
-        @SuppressLint("NotifyDataSetChanged")
+        @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
@@ -248,6 +242,15 @@ public class HomeFragment extends Fragment {
                         ", Diastolic: " + diastolic +
                         ", Pulse: " + pulse);
                 Log.d(TAG, "Date: " + dateTime);
+
+                TextView systolicTextView = requireActivity().findViewById(R.id.text_systolic);
+                systolicTextView.setText("Systolic: " + systolic);
+
+                TextView diastolicTextView = requireActivity().findViewById(R.id.text_diastolic);
+                diastolicTextView.setText("Diastolic: " + diastolic);
+
+                TextView pulseTextView = requireActivity().findViewById(R.id.text_pulse);
+                pulseTextView.setText("Pulse: " + pulse);
             }
         }
     };
