@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +22,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CalendarView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,11 +45,8 @@ import com.example.bloodpressure.gatt.BluetoothLeService;
 import com.example.bloodpressure.R;
 import com.example.bloodpressure.databinding.FragmentHomeBinding;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +68,6 @@ public class HomeFragment extends Fragment {
     private final List<BloodPressureReading> readings = new ArrayList<>();
 
     private BloodPressureDao bloodPressureDao;
-    private LineChart lineChart;
 
     private final Handler handler = new Handler();
 
@@ -96,6 +97,13 @@ public class HomeFragment extends Fragment {
         BluetoothManager bluetoothManager = (BluetoothManager) requireActivity().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
+        Button toggleCalendarButton = root.findViewById(R.id.button_toggle_calendar);
+        CalendarView calendarView = root.findViewById(R.id.calendarView);
+
+        TextView systolicText = root.findViewById(R.id.text_systolic);
+        TextView diastolicText = root.findViewById(R.id.text_diastolic);
+        TextView pulseText = root.findViewById(R.id.text_pulse);
+
         if (bluetoothAdapter == null) {
             Toast.makeText(getActivity(), "Bluetooth not supported on this device", Toast.LENGTH_SHORT).show();
             requireActivity().finish();
@@ -116,19 +124,48 @@ public class HomeFragment extends Fragment {
 
         bloodPressureDao = new BloodPressureDao(getActivity());
 
-        // Load previously saved readings from the database
-        new Thread(() -> {
-            List<BloodPressureReading> savedReadings = bloodPressureDao.getLast8Readings();
-            requireActivity().runOnUiThread(() -> {
-                readings.clear(); // Clear before loading - avoid duplication
-                readings.addAll(savedReadings);
-                adapter.notifyDataSetChanged();
-                updateChart();
-            });
-        }).start();
+        loadReadingsData("24 hours", null); // Default upon loading
 
-        lineChart = root.findViewById(R.id.line_chart);
-        setupChart();
+        Spinner spinnerTimes = root.findViewById(R.id.spinner_times);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(requireActivity(), R.array.times, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerTimes.setAdapter(spinnerAdapter);
+
+        spinnerTimes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String selectedTime = parentView.getItemAtPosition(position).toString();
+                loadReadingsData(selectedTime, null);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) { }
+        });
+
+        toggleCalendarButton.setOnClickListener(v -> {
+            if (calendarView.getVisibility() == View.GONE) {
+                calendarView.setVisibility(View.VISIBLE);
+                systolicText.setVisibility(View.GONE);
+                diastolicText.setVisibility(View.GONE);
+                pulseText.setVisibility(View.GONE);
+                toggleCalendarButton.setText("Hide Calendar");
+            } else {
+                calendarView.setVisibility(View.GONE);
+                systolicText.setVisibility(View.VISIBLE);
+                diastolicText.setVisibility(View.VISIBLE);
+                pulseText.setVisibility(View.VISIBLE);
+                toggleCalendarButton.setText("Show Calendar");
+            }
+        });
+
+        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            int correctedMonth = month + 1; // correct index
+            @SuppressLint("DefaultLocale") String selectedDate = String.format("%04d-%02d-%02d", year, correctedMonth, dayOfMonth);
+            loadReadingsData(null, selectedDate);
+        });
+
+        toggleCalendarButton.performClick(); // Temp stopgap
+
+        //bloodPressureDao.logAllTimestamps(); // For debugging readings
 
         return root;
     }
@@ -212,7 +249,7 @@ public class HomeFragment extends Fragment {
     };
 
     private final BroadcastReceiver bloodPressureReceiver = new BroadcastReceiver() {
-        @SuppressLint("NotifyDataSetChanged")
+        @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
@@ -235,69 +272,57 @@ public class HomeFragment extends Fragment {
 
                 new Thread(() -> bloodPressureDao.insertReading(systolic, diastolic, pulse, dateTime)).start();
 
-                updateChart();
-
                 Log.d(TAG, "Blood Pressure Readings - Systolic: " + systolic +
                         ", Diastolic: " + diastolic +
                         ", Pulse: " + pulse);
                 Log.d(TAG, "Date: " + dateTime);
+
+                TextView systolicTextView = requireActivity().findViewById(R.id.text_systolic);
+                systolicTextView.setText("Systolic: " + systolic);
+
+                TextView diastolicTextView = requireActivity().findViewById(R.id.text_diastolic);
+                diastolicTextView.setText("Diastolic: " + diastolic);
+
+                TextView pulseTextView = requireActivity().findViewById(R.id.text_pulse);
+                pulseTextView.setText("Pulse: " + pulse);
             }
         }
     };
 
-    private void setupChart() {
-        lineChart.getDescription().setEnabled(false);
-        lineChart.setTouchEnabled(true);
-        lineChart.setDragEnabled(true);
-        lineChart.setScaleEnabled(true);
-        lineChart.setPinchZoom(true);
+    @SuppressLint("NotifyDataSetChanged")
+    private void loadReadingsData(String timeRange, @Nullable String selectedDate) {
+        new Thread(() -> {
+            List<BloodPressureReading> filteredReadings = new ArrayList<>();
 
-        XAxis xAxis = lineChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setAvoidFirstLastClipping(true);
+            // If a specific date is selected, load readings for that date
+            if (selectedDate != null && !selectedDate.isEmpty()) {
+                filteredReadings = bloodPressureDao.getReadingsCertainDate(selectedDate);
+            } else {
+                // If no date is selected, load readings based on the time range
+                switch (timeRange) {
+                    case "24 hours":
+                        filteredReadings = bloodPressureDao.getReadingsLast24Hours();
+                        break;
+                    case "72 hours":
+                        filteredReadings = bloodPressureDao.getReadingsLast72Hours();
+                        break;
+                    case "1 week":
+                        filteredReadings = bloodPressureDao.getReadingsLast7Days();
+                        break;
+                }
+            }
 
-        YAxis leftAxis = lineChart.getAxisLeft();
-        leftAxis.setDrawGridLines(false);
-
-        YAxis rightAxis = lineChart.getAxisRight();
-        rightAxis.setEnabled(false);
+            // Update the readings list on the main thread
+            List<BloodPressureReading> finalFilteredReadings = filteredReadings;
+            requireActivity().runOnUiThread(() -> {
+                readings.clear();
+                readings.addAll(finalFilteredReadings);
+                adapter.notifyDataSetChanged();
+            });
+        }).start();
     }
 
-    private void updateChart() {
-        List<Entry> systolicEntries = new ArrayList<>();
-        List<Entry> diastolicEntries = new ArrayList<>();
-        List<Entry> pulseEntries = new ArrayList<>();
 
-        for (int i = 0; i < readings.size(); i++) {
-            BloodPressureReading reading = readings.get(i);
-            systolicEntries.add(new Entry(i, reading.getSystolic()));
-            diastolicEntries.add(new Entry(i, reading.getDiastolic()));
-            pulseEntries.add(new Entry(i, reading.getPulse()));
-        }
-
-        LineData lineData = getLineData(systolicEntries, diastolicEntries, pulseEntries);
-        lineChart.setData(lineData);
-        lineChart.invalidate();
-    }
-
-    private static @NonNull LineData getLineData(List<Entry> systolicEntries, List<Entry> diastolicEntries, List<Entry> pulseEntries) {
-        LineDataSet systolicDataSet = new LineDataSet(systolicEntries, "Systolic");
-        systolicDataSet.setColor(Color.RED);
-        systolicDataSet.setLineWidth(2f);
-        systolicDataSet.setCircleColor(Color.RED);
-
-        LineDataSet diastolicDataSet = new LineDataSet(diastolicEntries, "Diastolic");
-        diastolicDataSet.setColor(Color.BLUE);
-        diastolicDataSet.setLineWidth(2f);
-        diastolicDataSet.setCircleColor(Color.BLUE);
-
-        LineDataSet pulseDataSet = new LineDataSet(pulseEntries, "Pulse");
-        pulseDataSet.setColor(Color.GREEN);
-        pulseDataSet.setLineWidth(2f);
-        pulseDataSet.setCircleColor(Color.GREEN);
-
-        return new LineData(systolicDataSet, diastolicDataSet, pulseDataSet);
-    }
 
     private final Runnable scanRunnable = new Runnable() {
         @Override
