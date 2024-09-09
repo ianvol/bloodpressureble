@@ -24,6 +24,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +45,8 @@ import com.example.bloodpressure.gatt.BluetoothLeService;
 import com.example.bloodpressure.R;
 import com.example.bloodpressure.databinding.FragmentHomeBinding;
 import com.github.mikephil.charting.charts.LineChart;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +68,6 @@ public class HomeFragment extends Fragment {
     private final List<BloodPressureReading> readings = new ArrayList<>();
 
     private BloodPressureDao bloodPressureDao;
-    private LineChart lineChart;
 
     private final Handler handler = new Handler();
 
@@ -94,6 +97,13 @@ public class HomeFragment extends Fragment {
         BluetoothManager bluetoothManager = (BluetoothManager) requireActivity().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
+        Button toggleCalendarButton = root.findViewById(R.id.button_toggle_calendar);
+        CalendarView calendarView = root.findViewById(R.id.calendarView);
+
+        TextView systolicText = root.findViewById(R.id.text_systolic);
+        TextView diastolicText = root.findViewById(R.id.text_diastolic);
+        TextView pulseText = root.findViewById(R.id.text_pulse);
+
         if (bluetoothAdapter == null) {
             Toast.makeText(getActivity(), "Bluetooth not supported on this device", Toast.LENGTH_SHORT).show();
             requireActivity().finish();
@@ -114,7 +124,7 @@ public class HomeFragment extends Fragment {
 
         bloodPressureDao = new BloodPressureDao(getActivity());
 
-        loadReadingsData("24 hours"); // Default upon loading
+        loadReadingsData("24 hours", null); // Default upon loading
 
         Spinner spinnerTimes = root.findViewById(R.id.spinner_times);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(requireActivity(), R.array.times, android.R.layout.simple_spinner_item);
@@ -125,11 +135,35 @@ public class HomeFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 String selectedTime = parentView.getItemAtPosition(position).toString();
-                loadReadingsData(selectedTime);
+                loadReadingsData(selectedTime, null);
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) { }
         });
+
+        toggleCalendarButton.setOnClickListener(v -> {
+            if (calendarView.getVisibility() == View.GONE) {
+                calendarView.setVisibility(View.VISIBLE);
+                systolicText.setVisibility(View.GONE);
+                diastolicText.setVisibility(View.GONE);
+                pulseText.setVisibility(View.GONE);
+                toggleCalendarButton.setText("Hide Calendar");
+            } else {
+                calendarView.setVisibility(View.GONE);
+                systolicText.setVisibility(View.VISIBLE);
+                diastolicText.setVisibility(View.VISIBLE);
+                pulseText.setVisibility(View.VISIBLE);
+                toggleCalendarButton.setText("Show Calendar");
+            }
+        });
+
+        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            int correctedMonth = month + 1; // correct index
+            @SuppressLint("DefaultLocale") String selectedDate = String.format("%04d-%02d-%02d", year, correctedMonth, dayOfMonth);
+            loadReadingsData(null, selectedDate);
+        });
+
+        toggleCalendarButton.performClick(); // Temp stopgap
 
         //bloodPressureDao.logAllTimestamps(); // For debugging readings
 
@@ -256,21 +290,29 @@ public class HomeFragment extends Fragment {
     };
 
     @SuppressLint("NotifyDataSetChanged")
-    private void loadReadingsData(String timeRange) {
+    private void loadReadingsData(String timeRange, @Nullable String selectedDate) {
         new Thread(() -> {
             List<BloodPressureReading> filteredReadings = new ArrayList<>();
 
-            switch (timeRange) {
-                case "24 hours":
-                    filteredReadings = bloodPressureDao.getReadingsLast24Hours();
-                    break;
-                case "72 hours":
-                    filteredReadings = bloodPressureDao.getReadingsLast72Hours();
-                    break;
-                case "1 week":
-                    filteredReadings = bloodPressureDao.getReadingsLast7Days();
-                    break;
+            // If a specific date is selected, load readings for that date
+            if (selectedDate != null && !selectedDate.isEmpty()) {
+                filteredReadings = bloodPressureDao.getReadingsCertainDate(selectedDate);
+            } else {
+                // If no date is selected, load readings based on the time range
+                switch (timeRange) {
+                    case "24 hours":
+                        filteredReadings = bloodPressureDao.getReadingsLast24Hours();
+                        break;
+                    case "72 hours":
+                        filteredReadings = bloodPressureDao.getReadingsLast72Hours();
+                        break;
+                    case "1 week":
+                        filteredReadings = bloodPressureDao.getReadingsLast7Days();
+                        break;
+                }
             }
+
+            // Update the readings list on the main thread
             List<BloodPressureReading> finalFilteredReadings = filteredReadings;
             requireActivity().runOnUiThread(() -> {
                 readings.clear();
@@ -279,6 +321,8 @@ public class HomeFragment extends Fragment {
             });
         }).start();
     }
+
+
 
     private final Runnable scanRunnable = new Runnable() {
         @Override
