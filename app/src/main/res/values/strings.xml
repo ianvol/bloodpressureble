@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Blood Pressure</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_dashboard">Results</string>
+    <string name="title_notifications">Selection</string>
     <string-array name="times">
         <item>24 hours</item>
         <item>72 hours</item>
