@@ -3,9 +3,13 @@ package com.example.bloodpressure.ui.dashboard;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,6 +37,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
+import org.jetbrains.annotations.Nullable;
+
 public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
@@ -55,11 +61,27 @@ public class DashboardFragment extends Fragment {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        loadAverageReading();
-
         adapter = new BloodPressureAdapter(readings);
 
         bloodPressureDao = new BloodPressureDao(getActivity());
+
+        loadReadingsData("24 hours", null); // Default upon loading
+
+        Spinner spinnerTimes = root.findViewById(R.id.spinner_times);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(requireActivity(), R.array.times, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerTimes.setAdapter(spinnerAdapter);
+
+        spinnerTimes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String selectedTime = parentView.getItemAtPosition(position).toString();
+                loadReadingsData(selectedTime, null);
+                loadAverageReading(selectedTime);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) { }
+        });
 
         // Load previously saved readings from the database
         new Thread(() -> {
@@ -85,9 +107,22 @@ public class DashboardFragment extends Fragment {
     }
 
     @SuppressLint("DefaultLocale")
-    private void loadAverageReading() {
+    private void loadAverageReading(String timeRange) {
         BloodPressureDao dao = new BloodPressureDao(getActivity());
-        List<BloodPressureReading> last8Readings = dao.getLast8Readings();
+        List<BloodPressureReading> readingsForAverage = new ArrayList<>();
+
+        switch (timeRange) {
+            case "Today":
+                readingsForAverage = dao.getReadingsForToday();
+                break;
+            case "Last 8 Readings":
+                readingsForAverage = dao.getLast8Readings();
+                break;
+            case "1 Week":
+                readingsForAverage = dao.getReadingsLast7Days();
+                break;
+        }
+
         dao.close();
 
         float totalSystolic = 0;
@@ -95,7 +130,7 @@ public class DashboardFragment extends Fragment {
         float totalPulse = 0;
         int count = 0;
 
-        for (BloodPressureReading reading : last8Readings) {
+        for (BloodPressureReading reading : readingsForAverage) {
             if (reading.getSystolic() != 2047 && reading.getDiastolic() != 2047 && reading.getPulse() != 2047) {
                 totalSystolic += reading.getSystolic();
                 totalDiastolic += reading.getDiastolic();
@@ -110,12 +145,13 @@ public class DashboardFragment extends Fragment {
 
         TextView systolicTextView = binding.getRoot().findViewById(R.id.text_average_systolic);
         TextView diastolicTextView = binding.getRoot().findViewById(R.id.text_average_diastolic);
-        //TextView pulseTextView = binding.getRoot().findViewById(R.id.text_average_pulse);
+        // TextView pulseTextView = binding.getRoot().findViewById(R.id.text_average_pulse);
 
         systolicTextView.setText(String.format("Average Systolic: %.1f", averageSystolic));
         diastolicTextView.setText(String.format("Average Diastolic: %.1f", averageDiastolic));
-        //pulseTextView.setText(String.format("Average Pulse: %.1f", averagePulse));
+        // pulseTextView.setText(String.format("Average Pulse: %.1f", averagePulse));
     }
+
 
     private void setupChart() {
         lineChart.getDescription().setEnabled(false);
@@ -169,5 +205,41 @@ public class DashboardFragment extends Fragment {
         pulseDataSet.setCircleColor(Color.GREEN);
 
         return new LineData(systolicDataSet, diastolicDataSet, pulseDataSet);
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void loadReadingsData(String timeRange, @Nullable String selectedDate) {
+        new Thread(() -> {
+            List<BloodPressureReading> filteredReadings = new ArrayList<>();
+
+            // If a specific date is selected, load readings for that date
+            if (selectedDate != null && !selectedDate.isEmpty()) {
+                filteredReadings = bloodPressureDao.getReadingsCertainDate(selectedDate);
+            } else {
+                // If no date is selected, load readings based on the time range
+                switch (timeRange) {
+                    case "Today":
+                        Log.e("Filter", "Range: " + timeRange);
+                        filteredReadings = bloodPressureDao.getReadingsForToday();
+                        break;
+                    case "Last 8 Readings":
+                        Log.e("Filter", "Range: " + timeRange);
+                        filteredReadings = bloodPressureDao.getLast8Readings();
+                        break;
+                    case "1 Week":
+                        Log.e("Filter", "Range: " + timeRange);
+                        filteredReadings = bloodPressureDao.getReadingsLast7Days();
+                        break;
+                }
+            }
+
+            // Update the readings list on the main thread
+            List<BloodPressureReading> finalFilteredReadings = filteredReadings;
+            requireActivity().runOnUiThread(() -> {
+                readings.clear();
+                readings.addAll(finalFilteredReadings);
+                adapter.notifyDataSetChanged();
+            });
+        }).start();
     }
 }

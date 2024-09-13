@@ -124,23 +124,6 @@ public class HomeFragment extends Fragment {
 
         bloodPressureDao = new BloodPressureDao(getActivity());
 
-        loadReadingsData("24 hours", null); // Default upon loading
-
-        Spinner spinnerTimes = root.findViewById(R.id.spinner_times);
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(requireActivity(), R.array.times, android.R.layout.simple_spinner_item);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerTimes.setAdapter(spinnerAdapter);
-
-        spinnerTimes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                String selectedTime = parentView.getItemAtPosition(position).toString();
-                loadReadingsData(selectedTime, null);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) { }
-        });
-
         toggleCalendarButton.setOnClickListener(v -> {
             if (calendarView.getVisibility() == View.GONE) {
                 calendarView.setVisibility(View.VISIBLE);

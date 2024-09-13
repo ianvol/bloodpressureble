@@ -101,6 +101,43 @@ public class BloodPressureDao {
         return readings;
     }
 
+    public List<BloodPressureReading> getReadingsForToday() {
+        List<BloodPressureReading> readings = new ArrayList<>();
+
+        String todayDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+        String query = "SELECT * FROM " + BloodPressureDbHelper.TABLE_NAME +
+                " WHERE DATE(" + BloodPressureDbHelper.COLUMN_DATE_TIME + ") = ?" +
+                " ORDER BY " + BloodPressureDbHelper.COLUMN_DATE_TIME + " DESC";
+
+        Cursor cursor = database.rawQuery(query, new String[]{todayDate});
+
+        if (cursor.moveToFirst()) {
+            do {
+                float systolic = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_SYSTOLIC));
+                float diastolic = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_DIASTOLIC));
+                float pulse = cursor.getFloat(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_PULSE_RATE));
+                String dateTime = cursor.getString(cursor.getColumnIndexOrThrow(BloodPressureDbHelper.COLUMN_DATE_TIME));
+
+                String[] dateTimeParts = dateTime.split("[- :]");
+                int year = Integer.parseInt(dateTimeParts[0]);
+                int month = Integer.parseInt(dateTimeParts[1]);
+                int day = Integer.parseInt(dateTimeParts[2]);
+                int hours = Integer.parseInt(dateTimeParts[3]);
+                int minutes = Integer.parseInt(dateTimeParts[4]);
+                int seconds = Integer.parseInt(dateTimeParts[5]);
+
+                BloodPressureReading reading = new BloodPressureReading(systolic, diastolic, pulse, year, month, day, hours, minutes, seconds);
+                if (systolic != 2047 || diastolic != 2047) {
+                    readings.add(reading);
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return readings;
+    }
+
+
     public List<BloodPressureReading> getAllReadings() {
         List<BloodPressureReading> readings = new ArrayList<>();
         Cursor cursor = database.query(BloodPressureDbHelper.TABLE_NAME, null, null, null, null, null, BloodPressureDbHelper.COLUMN_DATE_TIME + " DESC");
