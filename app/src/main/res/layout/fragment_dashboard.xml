@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.25" />
+        app:layout_constraintGuide_percent="0.2" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_middle"
@@ -149,12 +149,10 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
 
-
-
     <TableLayout
         android:id="@+id/table_readings"
         android:layout_width="376dp"
-        android:layout_height="197dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:padding="16dp"
         app:layout_constraintBottom_toTopOf="@id/guideline_middle"
@@ -167,6 +165,7 @@
         <TableRow>
 
             <TextView
+                android:id="@+id/time_header"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="Time"
@@ -174,6 +173,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/systolic_header"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="Systolic"
@@ -181,6 +181,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/diastolic_header"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="Diastolic"
@@ -188,6 +189,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/pulse_header"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="Pulse"
@@ -198,21 +200,25 @@
         <TableRow>
 
             <TextView
+                android:id="@+id/time_1"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="Time 1" />
 
             <TextView
+                android:id="@+id/systolic_1"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="120" />
 
             <TextView
+                android:id="@+id/diastolic_1"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="80" />
 
             <TextView
+                android:id="@+id/pulse_1"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="70" />
@@ -221,21 +227,25 @@
         <TableRow>
 
             <TextView
+                android:id="@+id/time_2"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="Time 2" />
 
             <TextView
+                android:id="@+id/systolic_2"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="125" />
 
             <TextView
+                android:id="@+id/diastolic_2"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="85" />
 
             <TextView
+                android:id="@+id/pulse_2"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="72" />
@@ -244,24 +254,163 @@
         <TableRow>
 
             <TextView
+                android:id="@+id/time_3"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="Time 3" />
 
             <TextView
+                android:id="@+id/systolic_3"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="130" />
 
             <TextView
+                android:id="@+id/diastolic_3"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="90" />
 
             <TextView
+                android:id="@+id/pulse_3"
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="75" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/time_4"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Time 4" />
+
+            <TextView
+                android:id="@+id/systolic_4"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="135" />
+
+            <TextView
+                android:id="@+id/diastolic_4"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="95" />
+
+            <TextView
+                android:id="@+id/pulse_4"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="78" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/time_5"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Time 5" />
+
+            <TextView
+                android:id="@+id/systolic_5"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="140" />
+
+            <TextView
+                android:id="@+id/diastolic_5"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="100" />
+
+            <TextView
+                android:id="@+id/pulse_5"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="80" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/time_6"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Time 6" />
+
+            <TextView
+                android:id="@+id/systolic_6"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="145" />
+
+            <TextView
+                android:id="@+id/diastolic_6"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="105" />
+
+            <TextView
+                android:id="@+id/pulse_6"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="82" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/time_7"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Time 7" />
+
+            <TextView
+                android:id="@+id/systolic_7"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="150" />
+
+            <TextView
+                android:id="@+id/diastolic_7"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="110" />
+
+            <TextView
+                android:id="@+id/pulse_7"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="85" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/time_8"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Time 8" />
+
+            <TextView
+                android:id="@+id/systolic_8"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="155" />
+
+            <TextView
+                android:id="@+id/diastolic_8"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="115" />
+
+            <TextView
+                android:id="@+id/pulse_8"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="88" />
         </TableRow>
 
     </TableLayout>

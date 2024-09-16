@@ -143,6 +143,41 @@ public class DashboardFragment extends Fragment {
                 break;
         }
 
+        TextView[] timeTextViews = {
+                binding.time1, binding.time2, binding.time3, binding.time4,
+                binding.time5, binding.time6, binding.time7, binding.time8
+        };
+
+        TextView[] systolicTextViews = {
+                binding.systolic1, binding.systolic2, binding.systolic3, binding.systolic4,
+                binding.systolic5, binding.systolic6, binding.systolic7, binding.systolic8
+        };
+
+        TextView[] diastolicTextViews = {
+                binding.diastolic1, binding.diastolic2, binding.diastolic3, binding.diastolic4,
+                binding.diastolic5, binding.diastolic6, binding.diastolic7, binding.diastolic8
+        };
+
+        TextView[] pulseTextViews = {
+                binding.pulse1, binding.pulse2, binding.pulse3, binding.pulse4,
+                binding.pulse5, binding.pulse6, binding.pulse7, binding.pulse8
+        };
+        
+        for (int i = 0; i < 8; i++) {
+            timeTextViews[i].setText("");
+            systolicTextViews[i].setText("");
+            diastolicTextViews[i].setText("");
+            pulseTextViews[i].setText("");
+        }
+
+        for (int i = 0; i < readingsForAverage.size() && i < 8; i++) {
+            BloodPressureReading reading = readingsForAverage.get(i);
+            timeTextViews[i].setText(reading.getDay() + "/" + reading.getMonth());
+            systolicTextViews[i].setText(String.valueOf(reading.getSystolic()));
+            diastolicTextViews[i].setText(String.valueOf(reading.getDiastolic()));
+            pulseTextViews[i].setText(String.valueOf(reading.getPulse()));
+        }
+
         dao.close();
 
         float totalSystolic = 0;
