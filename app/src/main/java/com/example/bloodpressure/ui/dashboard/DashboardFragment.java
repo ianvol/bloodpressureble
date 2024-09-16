@@ -13,6 +13,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -49,6 +50,7 @@ public class DashboardFragment extends Fragment {
     private final List<BloodPressureReading> readings = new ArrayList<>();
 
     private BloodPressureDao bloodPressureDao;
+    private ArrayList<CardView> filterBoxes = new ArrayList<>();
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
@@ -67,20 +69,30 @@ public class DashboardFragment extends Fragment {
 
         loadReadingsData("24 hours", null); // Default upon loading
 
-        Spinner spinnerTimes = root.findViewById(R.id.spinner_times);
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(requireActivity(), R.array.times, android.R.layout.simple_spinner_item);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerTimes.setAdapter(spinnerAdapter);
+        CardView boxToday = root.findViewById(R.id.box_today);
+        CardView boxLast8 = root.findViewById(R.id.box_last8);
+        CardView boxOneWeek = root.findViewById(R.id.box_one_week);
 
-        spinnerTimes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                String selectedTime = parentView.getItemAtPosition(position).toString();
-                loadReadingsData(selectedTime, null);
-                loadAverageReading(selectedTime);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) { }
+        filterBoxes.add(boxToday);
+        filterBoxes.add(boxLast8);
+        filterBoxes.add(boxOneWeek);
+
+        boxToday.setOnClickListener(v -> {
+            highlightSelectedBox(boxToday);
+            loadReadingsData("Today", null);
+            loadAverageReading("Today");
+        });
+
+        boxLast8.setOnClickListener(v -> {
+            highlightSelectedBox(boxLast8);
+            loadReadingsData("Last 8 Readings", null);
+            loadAverageReading("Last 8 Readings");
+        });
+
+        boxOneWeek.setOnClickListener(v -> {
+            highlightSelectedBox(boxOneWeek);
+            loadReadingsData("1 Week", null);
+            loadAverageReading("1 Week");
         });
 
         // Load previously saved readings from the database
@@ -104,6 +116,14 @@ public class DashboardFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void highlightSelectedBox(CardView selectedBox) {
+        for (CardView box : filterBoxes) {
+            if (box == selectedBox) {
+                box.setCardBackgroundColor(Color.RED);
+            } else { box.setCardBackgroundColor(Color.WHITE); }
+        }
     }
 
     @SuppressLint("DefaultLocale")
