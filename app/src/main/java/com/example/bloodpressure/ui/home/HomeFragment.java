@@ -26,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,6 +64,8 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private BluetoothLeService bluetoothLeService;
     private boolean isBoundService = false;
+    private ImageView wifiStatus;
+    private ImageView wifiStatusGreen;
 
     private BloodPressureAdapter adapter;
     private final List<BloodPressureReading> readings = new ArrayList<>();
@@ -96,6 +99,12 @@ public class HomeFragment extends Fragment {
 
         BluetoothManager bluetoothManager = (BluetoothManager) requireActivity().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
+
+        wifiStatus = root.findViewById(R.id.wifiStatus);
+        wifiStatusGreen = root.findViewById(R.id.wifiStatusGreen);
+
+        wifiStatus.setVisibility(View.VISIBLE);
+        wifiStatusGreen.setVisibility(View.GONE);
 
         Button toggleCalendarButton = root.findViewById(R.id.button_toggle_calendar);
         CalendarView calendarView = root.findViewById(R.id.calendarView);
@@ -201,6 +210,8 @@ public class HomeFragment extends Fragment {
     private void startBLEScan() {
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED ||
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            wifiStatus.setVisibility(View.VISIBLE);
+            wifiStatusGreen.setVisibility(View.GONE);
             Log.d(TAG, "Starting BLE scan");
             bluetoothLeScanner.startScan(scanCallback);
             Toast.makeText(getActivity(), "Scanning for BLE devices...", Toast.LENGTH_SHORT).show();
@@ -208,6 +219,7 @@ public class HomeFragment extends Fragment {
             checkPermissions();
         }
     }
+
     private final ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
@@ -216,11 +228,13 @@ public class HomeFragment extends Fragment {
             String deviceAddress = result.getDevice().getAddress();
             if (deviceName != null && deviceName.contains(TARGET_DEVICE_NAME)) {
                 Log.d(TAG, "Target device found: " + deviceName);
-                bluetoothLeScanner.stopScan(this);
+                bluetoothLeScanner.stopScan(scanCallback);
                 if (isBoundService) {
                     boolean success = bluetoothLeService.connect(deviceAddress);
                     if (success) {
                         Log.i(TAG, "Connected to device: " + deviceAddress);
+                        wifiStatus.setVisibility(View.GONE);
+                        wifiStatusGreen.setVisibility(View.VISIBLE);
                     } else {
                         Log.e(TAG, "Failed to connect to device: " + deviceAddress);
                     }
