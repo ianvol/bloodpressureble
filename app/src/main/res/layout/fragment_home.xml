@@ -7,10 +7,22 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
+    <TextView
+        android:id="@+id/connectionStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="220dp"
+        android:layout_marginBottom="32dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Disconnected"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@id/guideline_top"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ImageView
         android:id="@+id/wifiStatus"
-        android:layout_width="169dp"
-        android:layout_height="169dp"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:layout_marginStart="16dp"
         android:src="@drawable/red_wifi"
         app:layout_constraintBottom_toTopOf="@id/guideline_top"
@@ -20,14 +32,14 @@
 
     <ImageView
         android:id="@+id/wifiStatusGreen"
-        android:layout_width="169dp"
-        android:layout_height="169dp"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
 		android:layout_marginStart="16dp"
         android:src="@drawable/green_wifi"
         app:layout_constraintBottom_toTopOf="@id/guideline_top"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.366"
+        app:layout_constraintVertical_bias="0.166"
         android:visibility="gone" /> 
 
     <androidx.constraintlayout.widget.Guideline
@@ -117,4 +129,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/selectedCalendarDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selected Date: "
+        android:visibility="gone"
+        tools:layout_editor_absoluteX="174dp"
+        tools:layout_editor_absoluteY="555dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

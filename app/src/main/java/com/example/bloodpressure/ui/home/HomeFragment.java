@@ -66,6 +66,10 @@ public class HomeFragment extends Fragment {
     private boolean isBoundService = false;
     private ImageView wifiStatus;
     private ImageView wifiStatusGreen;
+    private TextView connectionStatus;
+
+    private TextView selectedCalendarDate;
+    private Button toggleCalendarButton;
 
     private BloodPressureAdapter adapter;
     private final List<BloodPressureReading> readings = new ArrayList<>();
@@ -103,11 +107,14 @@ public class HomeFragment extends Fragment {
         wifiStatus = root.findViewById(R.id.wifiStatus);
         wifiStatusGreen = root.findViewById(R.id.wifiStatusGreen);
 
+        connectionStatus = root.findViewById(R.id.connectionStatus);
+
         wifiStatus.setVisibility(View.VISIBLE);
         wifiStatusGreen.setVisibility(View.GONE);
 
-        Button toggleCalendarButton = root.findViewById(R.id.button_toggle_calendar);
+        toggleCalendarButton = root.findViewById(R.id.button_toggle_calendar);
         CalendarView calendarView = root.findViewById(R.id.calendarView);
+        //TextView selectedCalendarDate = root.findViewById(R.id.selectedCalendarDate);
 
         TextView systolicText = root.findViewById(R.id.text_systolic);
         TextView diastolicText = root.findViewById(R.id.text_diastolic);
@@ -153,6 +160,8 @@ public class HomeFragment extends Fragment {
             int correctedMonth = month + 1; // correct index
             @SuppressLint("DefaultLocale") String selectedDate = String.format("%04d-%02d-%02d", year, correctedMonth, dayOfMonth);
             loadReadingsData(null, selectedDate);
+            //selectedCalendarDate.setText("Selected date: " + selectedDate);
+            toggleCalendarButton.performClick();
         });
 
         toggleCalendarButton.performClick(); // Temp stopgap
@@ -212,6 +221,7 @@ public class HomeFragment extends Fragment {
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             wifiStatus.setVisibility(View.VISIBLE);
             wifiStatusGreen.setVisibility(View.GONE);
+            connectionStatus.setText("Disconnected");
             Log.d(TAG, "Starting BLE scan");
             bluetoothLeScanner.startScan(scanCallback);
             Toast.makeText(getActivity(), "Scanning for BLE devices...", Toast.LENGTH_SHORT).show();
@@ -235,6 +245,10 @@ public class HomeFragment extends Fragment {
                         Log.i(TAG, "Connected to device: " + deviceAddress);
                         wifiStatus.setVisibility(View.GONE);
                         wifiStatusGreen.setVisibility(View.VISIBLE);
+                        if (toggleCalendarButton.getText().toString().equals("Hide Calendar")) {
+                            toggleCalendarButton.performClick();
+                        }
+                        connectionStatus.setText("Connected");
                     } else {
                         Log.e(TAG, "Failed to connect to device: " + deviceAddress);
                     }
