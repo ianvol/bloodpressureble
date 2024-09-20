@@ -3,6 +3,7 @@ package com.example.bloodpressure.ui.goal;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +23,8 @@ public class GoalFragment extends Fragment {
     private EditText diastolicGoalInput;
 
     private static final String goalsFile = "BloodPressurePrefs";
-    private static final String SYSTOLIC_GOAL = "systolic_goal";
-    private static final String DIASTOLIC_GOAL = "diastolic_goal";
+    public String SYSTOLIC_GOAL = "systolic_goal";
+    public String DIASTOLIC_GOAL = "diastolic_goal";
 
     @Nullable
     @Override
@@ -53,7 +54,7 @@ public class GoalFragment extends Fragment {
     }
 
     private void saveGoals(String systolicGoal, String diastolicGoal) {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(goalsFile, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(goalsFile, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(SYSTOLIC_GOAL, systolicGoal);
         editor.putString(DIASTOLIC_GOAL, diastolicGoal);
@@ -61,15 +62,10 @@ public class GoalFragment extends Fragment {
     }
 
     private void loadGoals() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(goalsFile, Context.MODE_PRIVATE);
-        String savedSystolicGoal = sharedPreferences.getString(SYSTOLIC_GOAL, "");
-        String savedDiastolicGoal = sharedPreferences.getString(DIASTOLIC_GOAL, "");
-
-        if (!savedSystolicGoal.isEmpty()) {
-            systolicGoalInput.setText(savedSystolicGoal);
-        }
-        if (!savedDiastolicGoal.isEmpty()) {
-            diastolicGoalInput.setText(savedDiastolicGoal);
-        }
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("BloodPressurePrefs", Context.MODE_PRIVATE);
+        String systolicGoal = sharedPreferences.getString("systolic_goal", "");
+        systolicGoalInput.setText(systolicGoal);
+        String diastolicGoal = sharedPreferences.getString("diastolic_goal", "");
+        diastolicGoalInput.setText(diastolicGoal);
     }
 }

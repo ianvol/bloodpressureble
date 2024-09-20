@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -51,6 +52,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -68,8 +70,13 @@ public class HomeFragment extends Fragment {
     private ImageView wifiStatusGreen;
     private TextView connectionStatus;
 
-    private TextView selectedCalendarDate;
-    private Button toggleCalendarButton;
+    private TextView systolicGoalTextView;
+    private TextView diastolicGoalTextView;
+    private static final int DEFAULT_SYSTOLIC_GOAL = 120;
+    private static final int DEFAULT_DIASTOLIC_GOAL = 80;
+
+    private Handler handler2 = new Handler();
+    private Runnable updateGoalsRunnable;
 
     private BloodPressureAdapter adapter;
     private final List<BloodPressureReading> readings = new ArrayList<>();
@@ -106,15 +113,32 @@ public class HomeFragment extends Fragment {
 
         wifiStatus = root.findViewById(R.id.wifiStatus);
         wifiStatusGreen = root.findViewById(R.id.wifiStatusGreen);
-
         connectionStatus = root.findViewById(R.id.connectionStatus);
 
         wifiStatus.setVisibility(View.VISIBLE);
         wifiStatusGreen.setVisibility(View.GONE);
 
-        toggleCalendarButton = root.findViewById(R.id.button_toggle_calendar);
-        CalendarView calendarView = root.findViewById(R.id.calendarView);
-        //TextView selectedCalendarDate = root.findViewById(R.id.selectedCalendarDate);
+        // Find the goal TextViews
+        systolicGoalTextView = root.findViewById(R.id.systolicGoal);
+        diastolicGoalTextView = root.findViewById(R.id.diastolicGoal);
+
+        // Load goals into TextViews
+        //loadGoals();
+
+        updateGoalsRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (isAdded()) {
+                    // Load and update goals
+                    loadGoals();
+                    // Schedule the next update after 500 ms
+                    handler2.postDelayed(this, 750);
+                }
+            }
+        };
+
+        // Start updating goals
+        handler2.post(updateGoalsRunnable);
 
         TextView systolicText = root.findViewById(R.id.text_systolic);
         TextView diastolicText = root.findViewById(R.id.text_diastolic);
@@ -133,43 +157,11 @@ public class HomeFragment extends Fragment {
         bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
         checkPermissions();
 
-        RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new BloodPressureAdapter(readings);
-        recyclerView.setAdapter(adapter);
-
         bloodPressureDao = new BloodPressureDao(getActivity());
-
-        toggleCalendarButton.setOnClickListener(v -> {
-            if (calendarView.getVisibility() == View.GONE) {
-                calendarView.setVisibility(View.VISIBLE);
-                systolicText.setVisibility(View.GONE);
-                diastolicText.setVisibility(View.GONE);
-                pulseText.setVisibility(View.GONE);
-                toggleCalendarButton.setText("Hide Calendar");
-            } else {
-                calendarView.setVisibility(View.GONE);
-                systolicText.setVisibility(View.VISIBLE);
-                diastolicText.setVisibility(View.VISIBLE);
-                pulseText.setVisibility(View.VISIBLE);
-                toggleCalendarButton.setText("Show Calendar");
-            }
-        });
-
-        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-            int correctedMonth = month + 1; // correct index
-            @SuppressLint("DefaultLocale") String selectedDate = String.format("%04d-%02d-%02d", year, correctedMonth, dayOfMonth);
-            loadReadingsData(null, selectedDate);
-            //selectedCalendarDate.setText("Selected date: " + selectedDate);
-            toggleCalendarButton.performClick();
-        });
-
-        toggleCalendarButton.performClick(); // Temp stopgap
-
-        //bloodPressureDao.logAllTimestamps(); // For debugging readings
 
         return root;
     }
+
 
     @Override
     public void onStart() {
@@ -179,6 +171,7 @@ public class HomeFragment extends Fragment {
         requireActivity().startService(intent);
         startBLEScan();
         handler.post(scanRunnable);
+        handler2.post(updateGoalsRunnable);
 
         IntentFilter filter = new IntentFilter("com.example.bloodpressure.BLOOD_PRESSURE_UPDATE");
         requireActivity().registerReceiver(bloodPressureReceiver, filter);
@@ -194,6 +187,18 @@ public class HomeFragment extends Fragment {
         handler.removeCallbacks(scanRunnable);
 
         requireActivity().unregisterReceiver(bloodPressureReceiver);
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void loadGoals() {
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("BloodPressurePrefs", Context.MODE_PRIVATE);
+        String systolicGoal = sharedPreferences.getString("systolic_goal", "");
+        String diastolicGoal = sharedPreferences.getString("diastolic_goal", "");
+
+        Log.d("HomeFragment", "Loaded Systolic: " + systolicGoal + ", Diastolic: " + diastolicGoal);
+
+        systolicGoalTextView.setText("Systolic Goal: " + systolicGoal);
+        diastolicGoalTextView.setText("Diastolic Goal: " + diastolicGoal);
     }
 
     private void checkPermissions() {
@@ -245,9 +250,6 @@ public class HomeFragment extends Fragment {
                         Log.i(TAG, "Connected to device: " + deviceAddress);
                         wifiStatus.setVisibility(View.GONE);
                         wifiStatusGreen.setVisibility(View.VISIBLE);
-                        if (toggleCalendarButton.getText().toString().equals("Hide Calendar")) {
-                            toggleCalendarButton.performClick();
-                        }
                         connectionStatus.setText("Connected");
                     } else {
                         Log.e(TAG, "Failed to connect to device: " + deviceAddress);
@@ -299,41 +301,6 @@ public class HomeFragment extends Fragment {
             }
         }
     };
-
-    @SuppressLint("NotifyDataSetChanged")
-    private void loadReadingsData(String timeRange, @Nullable String selectedDate) {
-        new Thread(() -> {
-            List<BloodPressureReading> filteredReadings = new ArrayList<>();
-
-            // If a specific date is selected, load readings for that date
-            if (selectedDate != null && !selectedDate.isEmpty()) {
-                filteredReadings = bloodPressureDao.getReadingsCertainDate(selectedDate);
-            } else {
-                // If no date is selected, load readings based on the time range
-                switch (timeRange) {
-                    case "24 hours":
-                        filteredReadings = bloodPressureDao.getReadingsLast24Hours();
-                        break;
-                    case "72 hours":
-                        filteredReadings = bloodPressureDao.getReadingsLast72Hours();
-                        break;
-                    case "1 week":
-                        filteredReadings = bloodPressureDao.getReadingsLast7Days();
-                        break;
-                }
-            }
-
-            // Update the readings list on the main thread
-            List<BloodPressureReading> finalFilteredReadings = filteredReadings;
-            requireActivity().runOnUiThread(() -> {
-                readings.clear();
-                readings.addAll(finalFilteredReadings);
-                adapter.notifyDataSetChanged();
-            });
-        }).start();
-    }
-
-
 
     private final Runnable scanRunnable = new Runnable() {
         @Override

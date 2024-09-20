@@ -54,14 +54,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.65" />
+        app:layout_constraintGuide_begin="274dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="1.0" />
+        app:layout_constraintGuide_begin="465dp" />
 
     <TextView
         android:id="@+id/text_systolic"
@@ -98,26 +98,6 @@
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/text_diastolic"
-        app:layout_constraintBottom_toTopOf="@id/calendarView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <CalendarView
-        android:id="@+id/calendarView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/text_pulse"
-        app:layout_constraintBottom_toTopOf="@id/button_toggle_calendar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/button_toggle_calendar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Show Calendar"
-        app:layout_constraintTop_toBottomOf="@id/calendarView"
-        app:layout_constraintBottom_toTopOf="@id/guideline_middle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -125,18 +105,44 @@
         android:id="@+id/recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
+		android:visibility="gone"
         app:layout_constraintTop_toTopOf="@id/guideline_middle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/selectedCalendarDate"
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Selected Date: "
-        android:visibility="gone"
-        tools:layout_editor_absoluteX="174dp"
-        tools:layout_editor_absoluteY="555dp" />
+        android:layout_marginTop="49dp"
+        android:text="My Goal:"
+        android:textColor="@android:color/black"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_middle"
+        tools:layout_editor_absoluteX="138dp" />
+
+    <TextView
+        android:id="@+id/systolicGoal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Systolic: \n"
+        android:textColor="@android:color/black"
+        android:textSize="27sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="24dp"
+        tools:layout_editor_absoluteY="360dp" />
+
+    <TextView
+        android:id="@+id/diastolicGoal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Diastolic: \n"
+        android:textColor="@android:color/black"
+        android:textSize="27sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="272dp"
+        tools:layout_editor_absoluteY="360dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
