@@ -22,4 +22,11 @@
         android:name="com.example.bloodpressure.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+		
+	<fragment
+        android:id="@+id/navigation_goal"
+        android:name="com.example.bloodpressure.ui.goal.GoalFragment"
+        android:label="@string/title_goal"
+        tools:layout="@layout/fragment_goal" />
+		
 </navigation>

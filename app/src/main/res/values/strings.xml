@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Blood Pressure</string>
-    <string name="title_home">Home</string>
+    <string name="title_home">Measure</string>
     <string name="title_dashboard">Results</string>
     <string name="title_notifications">Selection</string>
+	<string name="title_goal">My Goal</string>
     <string-array name="times">
         <item>Today</item>
         <item>Last 8 Readings</item>
