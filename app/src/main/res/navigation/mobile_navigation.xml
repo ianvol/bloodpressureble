@@ -29,4 +29,10 @@
         android:label="@string/title_goal"
         tools:layout="@layout/fragment_goal" />
 		
+	<fragment
+        android:id="@+id/navigation_calendar"
+        android:name="com.example.bloodpressure.ui.calendar.CalendarFragment"
+        android:label="@string/title_calendar"
+        tools:layout="@layout/fragment_calendar" />
+		
 </navigation>

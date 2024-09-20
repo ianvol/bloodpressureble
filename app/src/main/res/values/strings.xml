@@ -4,6 +4,7 @@
     <string name="title_dashboard">Results</string>
     <string name="title_notifications">Selection</string>
 	<string name="title_goal">My Goal</string>
+	<string name="title_calendar">Calendar</string>
     <string-array name="times">
         <item>Today</item>
         <item>Last 8 Readings</item>
