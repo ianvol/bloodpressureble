@@ -10,4 +10,6 @@
         <item>Last 8 Readings</item>
         <item>1 Week</item>
     </string-array>
+	<string name="good_goal">Your blood pressure is within your goal. Keep up the good work!</string>
+    <string name="bad_goal">It is recommended to take further steps to better control your blood pressure. Speak to your GP or pharmacist for advice.</string>
 </resources>
