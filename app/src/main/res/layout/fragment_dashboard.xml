@@ -22,18 +22,18 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="470dp" />
 
-<androidx.cardview.widget.CardView
-    android:id="@+id/card_systolic"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:padding="16dp"
-    app:cardBackgroundColor="#F3F4F6"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp"
-    app:layout_constraintBottom_toTopOf="@id/guideline_top"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent">
+	<androidx.cardview.widget.CardView
+		android:id="@+id/card_systolic"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:padding="16dp"
+		app:cardBackgroundColor="#F3F4F6"
+		app:cardCornerRadius="8dp"
+		app:cardElevation="4dp"
+		app:layout_constraintBottom_toTopOf="@id/guideline_top"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

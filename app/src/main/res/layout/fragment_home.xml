@@ -49,57 +49,75 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.15" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_middle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="274dp" />
+	<androidx.constraintlayout.widget.Guideline
+		android:id="@+id/guideline_middle"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		app:layout_constraintGuide_begin="346dp" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="465dp" />
+	<androidx.constraintlayout.widget.Guideline
+		android:id="@+id/guideline_bottom"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		app:layout_constraintGuide_begin="612dp" />
+		
+<androidx.cardview.widget.CardView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:cardBackgroundColor="#F3F4F6"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/guideline_top">
 
-    <TextView
-        android:id="@+id/text_systolic"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Systolic: "
-        android:textColor="@android:color/black"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="@id/guideline_top"
-        app:layout_constraintBottom_toTopOf="@id/text_diastolic"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/text_diastolic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Diastolic: "
-        android:textColor="@android:color/black"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/text_systolic"
-        app:layout_constraintBottom_toTopOf="@id/text_pulse"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/text_systolic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Systolic: "
+            android:textColor="@android:color/black"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_gravity="center" />
 
-    <TextView
-        android:id="@+id/text_pulse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pulse: "
-        android:textColor="@android:color/black"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/text_diastolic"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/text_diastolic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Diastolic: "
+            android:textColor="@android:color/black"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/text_pulse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pulse: "
+            android:textColor="@android:color/black"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -111,38 +129,60 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="49dp"
-        android:text="My Goal:"
-        android:textColor="@android:color/black"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/guideline_middle"
-        tools:layout_editor_absoluteX="138dp" />
+	<androidx.cardview.widget.CardView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="16dp"
+		app:cardBackgroundColor="#F3F4F6"
+		app:cardCornerRadius="8dp"
+		app:cardElevation="4dp"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/guideline_middle">
 
-    <TextView
-        android:id="@+id/systolicGoal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Systolic: \n"
-        android:textColor="@android:color/black"
-        android:textSize="27sp"
-        android:textStyle="bold"
-        tools:layout_editor_absoluteX="24dp"
-        tools:layout_editor_absoluteY="360dp" />
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:padding="16dp">
 
-    <TextView
-        android:id="@+id/diastolicGoal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Diastolic: \n"
-        android:textColor="@android:color/black"
-        android:textSize="27sp"
-        android:textStyle="bold"
-        tools:layout_editor_absoluteX="272dp"
-        tools:layout_editor_absoluteY="360dp" />
+			<TextView
+				android:id="@+id/myGoal"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="My Goal:"
+				android:textColor="@android:color/black"
+				android:textSize="34sp"
+				android:textStyle="bold"
+				android:gravity="center"
+				android:layout_gravity="center"/>
+
+			<TextView
+				android:id="@+id/systolicGoal"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Systolic: \n"
+				android:textColor="@android:color/black"
+				android:textSize="27sp"
+				android:textStyle="bold"
+				android:gravity="center"
+				android:layout_gravity="center"
+				android:layout_marginTop="8dp"/>
+
+			<TextView
+				android:id="@+id/diastolicGoal"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Diastolic: \n"
+				android:textColor="@android:color/black"
+				android:textSize="27sp"
+				android:textStyle="bold"
+				android:gravity="center"
+				android:layout_gravity="center"
+				android:layout_marginTop="8dp"/>
+
+		</LinearLayout>
+
+	</androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
