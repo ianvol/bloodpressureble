@@ -72,8 +72,8 @@ public class HomeFragment extends Fragment {
 
     private TextView systolicGoalTextView;
     private TextView diastolicGoalTextView;
-    private static final int DEFAULT_SYSTOLIC_GOAL = 120;
-    private static final int DEFAULT_DIASTOLIC_GOAL = 80;
+
+    private TextView goalInfo;
 
     private Handler handler2 = new Handler();
     private Runnable updateGoalsRunnable;
@@ -121,6 +121,8 @@ public class HomeFragment extends Fragment {
         // Find the goal TextViews
         systolicGoalTextView = root.findViewById(R.id.systolicGoal);
         diastolicGoalTextView = root.findViewById(R.id.diastolicGoal);
+
+        goalInfo = root.findViewById(R.id.goalInfo);
 
         // Load goals into TextViews
         //loadGoals();
@@ -295,6 +297,16 @@ public class HomeFragment extends Fragment {
 
                 TextView diastolicTextView = requireActivity().findViewById(R.id.text_diastolic);
                 diastolicTextView.setText("Diastolic: " + diastolic);
+
+                int systolicGoal = Integer.parseInt(String.valueOf(systolicGoalTextView));
+                int diastolicGoal = Integer.parseInt(String.valueOf(diastolicGoalTextView));
+
+                if (systolic < systolicGoal || diastolic < diastolicGoal) {
+                    goalInfo.setText(R.string.good_goal);
+                }
+                else {
+                    goalInfo.setText(R.string.bad_goal);
+                }
 
                 TextView pulseTextView = requireActivity().findViewById(R.id.text_pulse);
                 pulseTextView.setText("Pulse: " + pulse);
