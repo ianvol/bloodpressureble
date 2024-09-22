@@ -111,6 +111,11 @@ public class HomeFragment extends Fragment {
         BluetoothManager bluetoothManager = (BluetoothManager) requireActivity().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
+        RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
+        adapter = new BloodPressureAdapter(readings);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         wifiStatus = root.findViewById(R.id.wifiStatus);
         wifiStatusGreen = root.findViewById(R.id.wifiStatusGreen);
         connectionStatus = root.findViewById(R.id.connectionStatus);
@@ -194,8 +199,9 @@ public class HomeFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     private void loadGoals() {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("BloodPressurePrefs", Context.MODE_PRIVATE);
-        String systolicGoal = sharedPreferences.getString("systolic_goal", "");
-        String diastolicGoal = sharedPreferences.getString("diastolic_goal", "");
+
+        int systolicGoal = sharedPreferences.getInt("systolic_goal", 0);
+        int diastolicGoal = sharedPreferences.getInt("diastolic_goal", 0);
 
         Log.d("HomeFragment", "Loaded Systolic: " + systolicGoal + ", Diastolic: " + diastolicGoal);
 
@@ -298,14 +304,20 @@ public class HomeFragment extends Fragment {
                 TextView diastolicTextView = requireActivity().findViewById(R.id.text_diastolic);
                 diastolicTextView.setText("Diastolic: " + diastolic);
 
-                int systolicGoal = Integer.parseInt(String.valueOf(systolicGoalTextView));
-                int diastolicGoal = Integer.parseInt(String.valueOf(diastolicGoalTextView));
+                try {
+                    SharedPreferences sharedPreferences = requireContext().getSharedPreferences("BloodPressurePrefs", Context.MODE_PRIVATE);
 
-                if (systolic < systolicGoal || diastolic < diastolicGoal) {
-                    goalInfo.setText(R.string.good_goal);
-                }
-                else {
-                    goalInfo.setText(R.string.bad_goal);
+                    int systolicGoal = sharedPreferences.getInt("systolic_goal", 0);  // Default to 0 if not set
+                    int diastolicGoal = sharedPreferences.getInt("diastolic_goal", 0);  // Default to 0 if not set
+
+                    if (systolic < systolicGoal || diastolic < diastolicGoal) {
+                        goalInfo.setText(R.string.good_goal);
+                    } else {
+                        goalInfo.setText(R.string.bad_goal);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error retrieving systolic/diastolic goal from SharedPreferences", e);
+                    goalInfo.setText("Invalid goal value");
                 }
 
                 TextView pulseTextView = requireActivity().findViewById(R.id.text_pulse);

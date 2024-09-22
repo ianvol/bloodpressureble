@@ -35,37 +35,40 @@ public class GoalFragment extends Fragment {
         diastolicGoalInput = root.findViewById(R.id.diastolic_goal_input);
         Button saveButton = root.findViewById(R.id.button_save_goal);
 
-        loadGoals();
+        //loadGoals();
 
         saveButton.setOnClickListener(v -> {
-            String systolicGoal = systolicGoalInput.getText().toString();
-            String diastolicGoal = diastolicGoalInput.getText().toString();
+            int systolicGoal = Integer.parseInt(systolicGoalInput.getText().toString());
+            int diastolicGoal = Integer.parseInt(diastolicGoalInput.getText().toString());
 
-            if (systolicGoal.isEmpty() || diastolicGoal.isEmpty()) {
+/*            if (systolicGoal.isEmpty() || diastolicGoal.isEmpty()) {
                 Toast.makeText(getActivity(), "Please enter both goals", Toast.LENGTH_SHORT).show();
                 return;
-            }
+            }*/
 
-            saveGoals(systolicGoal, diastolicGoal);
+            saveGoals(systolicGoal, Integer.parseInt(String.valueOf(diastolicGoal)));
             Toast.makeText(getActivity(), "Goals saved", Toast.LENGTH_SHORT).show();
         });
 
         return root;
     }
 
-    private void saveGoals(String systolicGoal, String diastolicGoal) {
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(goalsFile, Context.MODE_PRIVATE);
+    private void saveGoals(int systolicGoal, int diastolicGoal) {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("BloodPressurePrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SYSTOLIC_GOAL, systolicGoal);
-        editor.putString(DIASTOLIC_GOAL, diastolicGoal);
+
+        editor.putInt("systolic_goal", systolicGoal);
+        editor.putInt("diastolic_goal", diastolicGoal);
+
         editor.apply();
     }
 
-    private void loadGoals() {
+
+/*    private void loadGoals() {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("BloodPressurePrefs", Context.MODE_PRIVATE);
         String systolicGoal = sharedPreferences.getString("systolic_goal", "");
         systolicGoalInput.setText(systolicGoal);
         String diastolicGoal = sharedPreferences.getString("diastolic_goal", "");
         diastolicGoalInput.setText(diastolicGoal);
-    }
+    }*/
 }
