@@ -22,10 +22,6 @@ public class GoalFragment extends Fragment {
     private EditText systolicGoalInput;
     private EditText diastolicGoalInput;
 
-    private static final String goalsFile = "BloodPressurePrefs";
-    public String SYSTOLIC_GOAL = "systolic_goal";
-    public String DIASTOLIC_GOAL = "diastolic_goal";
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

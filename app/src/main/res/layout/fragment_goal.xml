@@ -7,32 +7,51 @@
     android:layout_height="match_parent"
     tools:context=".ui.goal.GoalFragment">
 
-    <EditText
-        android:id="@+id/systolic_goal_input"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/box"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Enter Systolic Goal"
-        android:inputType="number"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="8dp"
+        android:padding="16dp"
+        app:cardBackgroundColor="#E0E0E0"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"> <!-- Centered with respect to parent -->
 
-    <EditText
-        android:id="@+id/diastolic_goal_input"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Enter Diastolic Goal"
-        android:inputType="number"
-        app:layout_constraintTop_toBottomOf="@id/systolic_goal_input"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+		<EditText
+			android:id="@+id/diastolic_goal_input"
+			android:layout_width="match_parent"
+			android:layout_height="80dp"
+			android:hint="Enter Diastolic Goal"
+			android:inputType="number"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintTop_toBottomOf="@id/systolic_goal_input" />
 
-    <Button
-        android:id="@+id/button_save_goal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save Goal"
-        app:layout_constraintTop_toBottomOf="@id/diastolic_goal_input"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+		<EditText
+            android:id="@+id/systolic_goal_input"
+            android:layout_width="match_parent"
+            android:layout_height="84dp"
+            android:layout_marginTop="132dp"
+            android:hint="Enter Systolic Goal"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.cardview.widget.CardView>
+
+	<Button
+		android:id="@+id/button_save_goal"
+		android:layout_width="125dp"
+		android:layout_height="64dp"
+		android:layout_marginTop="24dp"
+		android:text="Save Goal"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/box" /> <!-- Centered with respect to parent -->
+
 </androidx.constraintlayout.widget.ConstraintLayout>

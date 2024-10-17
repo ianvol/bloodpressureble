@@ -304,6 +304,9 @@ public class HomeFragment extends Fragment {
                 TextView diastolicTextView = requireActivity().findViewById(R.id.text_diastolic);
                 diastolicTextView.setText("Diastolic: " + diastolic);
 
+                TextView pulseTextView = requireActivity().findViewById(R.id.text_pulse);
+                pulseTextView.setText("Pulse: " + pulse);
+
                 try {
                     SharedPreferences sharedPreferences = requireContext().getSharedPreferences("BloodPressurePrefs", Context.MODE_PRIVATE);
 
@@ -319,9 +322,6 @@ public class HomeFragment extends Fragment {
                     Log.e(TAG, "Error retrieving systolic/diastolic goal from SharedPreferences", e);
                     goalInfo.setText("Invalid goal value");
                 }
-
-                TextView pulseTextView = requireActivity().findViewById(R.id.text_pulse);
-                pulseTextView.setText("Pulse: " + pulse);
             }
         }
     };

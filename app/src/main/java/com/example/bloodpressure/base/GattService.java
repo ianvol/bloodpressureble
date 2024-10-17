@@ -7,7 +7,7 @@ public class GattService {
     public static final String KEY_SYSTOLIC = "systolic";
     public static final String KEY_DIASTOLIC = "diastolic";
     public static final String KEY_MEAS_ARTERIAL_PRESSURE = "measArterialPressure";
-    public static final String KEY_PULSE_RATE = "pulseRate";
+    public static final String KEY_PULSE_RATE = "pulse_rate";
 
     public static final String KEY_YEAR = "year";
     public static final String KEY_MONTH = "month";
