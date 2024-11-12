@@ -1,5 +1,7 @@
 package com.example.bloodpressure.ui.home;
 
+import static android.content.Context.RECEIVER_EXPORTED;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -181,7 +183,7 @@ public class HomeFragment extends Fragment {
         handler2.post(updateGoalsRunnable);
 
         IntentFilter filter = new IntentFilter("com.example.bloodpressure.BLOOD_PRESSURE_UPDATE");
-        requireActivity().registerReceiver(bloodPressureReceiver, filter);
+        requireActivity().registerReceiver(bloodPressureReceiver, filter, RECEIVER_EXPORTED);
     }
 
     @Override

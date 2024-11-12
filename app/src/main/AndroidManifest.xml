@@ -36,7 +36,7 @@
         android:roundIcon="@mipmap/img"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:targetApi="31">
+        tools:targetApi="33">
 
         <uses-library
             android:name="com.samsung.android.sdk.bt"
