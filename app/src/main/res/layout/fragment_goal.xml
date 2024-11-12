@@ -18,17 +18,7 @@
         app:cardElevation="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"> <!-- Centered with respect to parent -->
-
-		<EditText
-			android:id="@+id/diastolic_goal_input"
-			android:layout_width="match_parent"
-			android:layout_height="80dp"
-			android:hint="Enter Diastolic Goal"
-			android:inputType="number"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/systolic_goal_input" />
+        app:layout_constraintTop_toTopOf="parent">
 
 		<EditText
             android:id="@+id/systolic_goal_input"
@@ -41,6 +31,16 @@
             app:layout_constraintHorizontal_bias="0.503"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+			
+		<EditText
+			android:id="@+id/diastolic_goal_input"
+			android:layout_width="match_parent"
+			android:layout_height="80dp"
+			android:hint="Enter Diastolic Goal"
+			android:inputType="number"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintTop_toBottomOf="@id/systolic_goal_input" />
 
     </androidx.cardview.widget.CardView>
 
