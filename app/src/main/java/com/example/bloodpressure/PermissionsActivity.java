@@ -48,7 +48,7 @@ public class PermissionsActivity extends AppCompatActivity {
 
     private void requestBluetoothEnable() {
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
+        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH); // Still works
     }
 
     private void promptEnableLocation() {

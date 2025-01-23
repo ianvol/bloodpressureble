@@ -37,7 +37,7 @@ public class GoalFragment extends Fragment {
             int systolicGoal = Integer.parseInt(systolicGoalInput.getText().toString());
             int diastolicGoal = Integer.parseInt(diastolicGoalInput.getText().toString());
 
-/*            if (systolicGoal.isEmpty() || diastolicGoal.isEmpty()) {
+/*            if (systolicGoal.isEmpty() || diastolicGoal.isEmpty()) { // This broke it somehow?
                 Toast.makeText(getActivity(), "Please enter both goals", Toast.LENGTH_SHORT).show();
                 return;
             }*/

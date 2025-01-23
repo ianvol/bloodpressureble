@@ -82,7 +82,6 @@ public class BluetoothLeService extends Service {
         }
     }
 
-
     public void disconnect() {
         if (bluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized.");
@@ -102,7 +101,6 @@ public class BluetoothLeService extends Service {
                 sendBroadcast(TYPE_GATT_ERROR, device, status);
                 return;
             }
-
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 sendBroadcast(TYPE_GATT_CONNECTED, device, status);
                 Log.i(TAG, "Connected to GATT server.");

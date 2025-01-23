@@ -20,38 +20,38 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-		<EditText
-            android:id="@+id/systolic_goal_input"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="84dp"
-            android:layout_marginTop="132dp"
-            android:hint="Enter Systolic Goal"
-            android:inputType="number"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.503"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-			
-		<EditText
-			android:id="@+id/diastolic_goal_input"
-			android:layout_width="match_parent"
-			android:layout_height="80dp"
-			android:hint="Enter Diastolic Goal"
-			android:inputType="number"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/systolic_goal_input" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/systolic_goal_input"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:hint="Enter Systolic Goal"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/diastolic_goal_input"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="24dp"
+                android:hint="Enter Diastolic Goal"
+                android:inputType="number" />
+
+        </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 
-	<Button
-		android:id="@+id/button_save_goal"
-		android:layout_width="125dp"
-		android:layout_height="64dp"
-		android:layout_marginTop="24dp"
-		android:text="Save Goal"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/box" /> <!-- Centered with respect to parent -->
+    <Button
+        android:id="@+id/button_save_goal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Save Goal"
+        app:layout_constraintTop_toBottomOf="@id/box"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

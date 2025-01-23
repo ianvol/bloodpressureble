@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment;
 import com.github.appintro.AppIntro;
 import com.github.appintro.AppIntroFragment;
 
-public class WelcomeActivity extends AppIntro {
+public class WelcomeActivity extends AppIntro { // Can be altered as desired
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

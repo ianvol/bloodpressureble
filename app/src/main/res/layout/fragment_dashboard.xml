@@ -57,7 +57,7 @@
                 android:layout_weight="1"
                 android:layout_margin="8dp"
                 android:padding="16dp"
-                app:cardBackgroundColor="#E0E0E0"
+                app:cardBackgroundColor="#3F51B5"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
@@ -67,7 +67,7 @@
                     android:text="Today"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black"
+                    android:textColor="@android:color/white"
                     android:gravity="center"
                     android:layout_gravity="center" />
             </androidx.cardview.widget.CardView>
@@ -79,7 +79,7 @@
                 android:layout_weight="1"
                 android:layout_margin="8dp"
                 android:padding="16dp"
-                app:cardBackgroundColor="#E0E0E0"
+                app:cardBackgroundColor="#3F51B5"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
@@ -89,7 +89,7 @@
                     android:text="Last 8"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black"
+                    android:textColor="@android:color/white"
                     android:gravity="center"
                     android:layout_gravity="center" />
             </androidx.cardview.widget.CardView>
@@ -101,7 +101,7 @@
                 android:layout_weight="1"
                 android:layout_margin="8dp"
                 android:padding="16dp"
-                app:cardBackgroundColor="#E0E0E0"
+                app:cardBackgroundColor="#3F51B5"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
@@ -111,7 +111,7 @@
                     android:text="1 Week"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black"
+                    android:textColor="@android:color/white"
                     android:gravity="center"
                     android:layout_gravity="center" />
             </androidx.cardview.widget.CardView>
@@ -141,6 +141,20 @@
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/text_average_systolic"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textAlignment="center"
+            android:gravity="center"/>
+			
+		<TextView
+            android:id="@+id/text_average_pulse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Average Pulse: 0"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/text_average_diastolic"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

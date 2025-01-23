@@ -125,33 +125,25 @@ public class HomeFragment extends Fragment {
         wifiStatus.setVisibility(View.VISIBLE);
         wifiStatusGreen.setVisibility(View.GONE);
 
-        // Find the goal TextViews
         systolicGoalTextView = root.findViewById(R.id.systolicGoal);
         diastolicGoalTextView = root.findViewById(R.id.diastolicGoal);
 
         goalInfo = root.findViewById(R.id.goalInfo);
 
-        // Load goals into TextViews
         //loadGoals();
 
         updateGoalsRunnable = new Runnable() {
             @Override
             public void run() {
                 if (isAdded()) {
-                    // Load and update goals
                     loadGoals();
-                    // Schedule the next update after 500 ms
-                    handler2.postDelayed(this, 750);
+                    handler2.postDelayed(this, 750); // Delay to ensure loading
                 }
             }
         };
 
         // Start updating goals
         handler2.post(updateGoalsRunnable);
-
-        TextView systolicText = root.findViewById(R.id.text_systolic);
-        TextView diastolicText = root.findViewById(R.id.text_diastolic);
-        TextView pulseText = root.findViewById(R.id.text_pulse);
 
         if (bluetoothAdapter == null) {
             Toast.makeText(getActivity(), "Bluetooth not supported on this device", Toast.LENGTH_SHORT).show();
@@ -175,6 +167,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        Context context = requireContext();
         Intent intent = new Intent(getActivity(), BluetoothLeService.class);
         requireActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         requireActivity().startService(intent);
@@ -183,7 +176,16 @@ public class HomeFragment extends Fragment {
         handler2.post(updateGoalsRunnable);
 
         IntentFilter filter = new IntentFilter("com.example.bloodpressure.BLOOD_PRESSURE_UPDATE");
-        requireActivity().registerReceiver(bloodPressureReceiver, filter, RECEIVER_EXPORTED);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.registerReceiver(
+                    context,
+                    bloodPressureReceiver,
+                    filter,
+                    ContextCompat.RECEIVER_NOT_EXPORTED
+            );
+        } else {
+            context.registerReceiver(bloodPressureReceiver, filter);
+        }
     }
 
     @Override

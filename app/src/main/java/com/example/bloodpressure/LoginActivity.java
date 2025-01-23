@@ -7,7 +7,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity { // Can be used in future? Only dummy page now
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

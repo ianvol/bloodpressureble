@@ -38,7 +38,7 @@ public class SelectionActivity extends AppCompatActivity {
         binding.topRightSquare.setOnClickListener(v -> {
             new Handler(Looper.getMainLooper()).postDelayed(this::moveActivityDashboard, 50);
             navView = findViewById(R.id.nav_view);
-            selectDashboardMenuItem(); // Simulate selection of dashboard menu item
+            selectDashboardMenuItem(); // Fake selection
         });
 
         binding.bottomLeftSquare.setOnClickListener(v -> {

@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -30,6 +31,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -44,7 +46,6 @@ public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
 
-    private static final String TAG = "DashboardFragment";
     private LineChart lineChart;
     private BloodPressureAdapter adapter;
     private final List<BloodPressureReading> readings = new ArrayList<>();
@@ -95,7 +96,6 @@ public class DashboardFragment extends Fragment {
             loadAverageReading("1 Week");
         });
 
-        // Load previously saved readings from the database
         new Thread(() -> {
             List<BloodPressureReading> savedReadings = bloodPressureDao.getLast8Readings();
             requireActivity().runOnUiThread(() -> {
@@ -145,15 +145,16 @@ public class DashboardFragment extends Fragment {
         binding = null;
     }
 
+    @SuppressLint({"ResourceAsColor", "ResourceType"})
     private void highlightSelectedBox(CardView selectedBox) {
         for (CardView box : filterBoxes) {
             if (box == selectedBox) {
                 box.setCardBackgroundColor(Color.RED);
-            } else { box.setCardBackgroundColor(Color.WHITE); }
+            } else { box.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary));}
         }
     }
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint({"DefaultLocale", "SetTextI18n"})
     private void loadAverageReading(String timeRange) {
         BloodPressureDao dao = new BloodPressureDao(getActivity());
         List<BloodPressureReading> readingsForAverage = new ArrayList<>();
@@ -227,11 +228,11 @@ public class DashboardFragment extends Fragment {
 
         TextView systolicTextView = binding.getRoot().findViewById(R.id.text_average_systolic);
         TextView diastolicTextView = binding.getRoot().findViewById(R.id.text_average_diastolic);
-        // TextView pulseTextView = binding.getRoot().findViewById(R.id.text_average_pulse);
+        TextView pulseTextView = binding.getRoot().findViewById(R.id.text_average_pulse);
 
         systolicTextView.setText(String.format("Average Systolic: %.1f", averageSystolic));
         diastolicTextView.setText(String.format("Average Diastolic: %.1f", averageDiastolic));
-        // pulseTextView.setText(String.format("Average Pulse: %.1f", averagePulse));
+        pulseTextView.setText(String.format("Average Pulse: %.1f", averagePulse));
     }
 
 
@@ -294,11 +295,9 @@ public class DashboardFragment extends Fragment {
         new Thread(() -> {
             List<BloodPressureReading> filteredReadings = new ArrayList<>();
 
-            // If a specific date is selected, load readings for that date
             if (selectedDate != null && !selectedDate.isEmpty()) {
                 filteredReadings = bloodPressureDao.getReadingsCertainDate(selectedDate);
             } else {
-                // If no date is selected, load readings based on the time range
                 switch (timeRange) {
                     case "Today":
                         Log.e("Filter", "Range: " + timeRange);
@@ -315,7 +314,6 @@ public class DashboardFragment extends Fragment {
                 }
             }
 
-            // Update the readings list on the main thread
             List<BloodPressureReading> finalFilteredReadings = filteredReadings;
             requireActivity().runOnUiThread(() -> {
                 readings.clear();
