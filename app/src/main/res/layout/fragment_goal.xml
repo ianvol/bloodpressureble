@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.goal.GoalFragment">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/box"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:padding="16dp"
+        app:cardBackgroundColor="#E0E0E0"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/systolic_goal_input"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:hint="Enter Systolic Goal"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/diastolic_goal_input"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="24dp"
+                android:hint="Enter Diastolic Goal"
+                android:inputType="number" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/button_save_goal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Save Goal"
+        app:layout_constraintTop_toBottomOf="@id/box"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

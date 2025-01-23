@@ -1,11 +1,16 @@
 <resources>
     <string name="app_name">Blood Pressure</string>
-    <string name="title_home">Home</string>
+    <string name="title_measure">Measure</string>
     <string name="title_dashboard">Results</string>
+	<string name="title_home">Home</string>
     <string name="title_notifications">Selection</string>
+	<string name="title_goal">My Goal</string>
+	<string name="title_calendar">Calendar</string>
     <string-array name="times">
-        <item>24 hours</item>
-        <item>72 hours</item>
-        <item>1 week</item>
+        <item>Today</item>
+        <item>Last 8 Readings</item>
+        <item>1 Week</item>
     </string-array>
+	<string name="good_goal">Your blood pressure is within your goal. Keep up the good work!</string>
+    <string name="bad_goal">It is recommended to take further steps to better control your blood pressure. Speak to your GP or pharmacist for advice.</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.example.bloodpressure.ui.home;
 
+import static android.content.Context.RECEIVER_EXPORTED;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -13,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +29,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +54,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -63,6 +68,17 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private BluetoothLeService bluetoothLeService;
     private boolean isBoundService = false;
+    private ImageView wifiStatus;
+    private ImageView wifiStatusGreen;
+    private TextView connectionStatus;
+
+    private TextView systolicGoalTextView;
+    private TextView diastolicGoalTextView;
+
+    private TextView goalInfo;
+
+    private Handler handler2 = new Handler();
+    private Runnable updateGoalsRunnable;
 
     private BloodPressureAdapter adapter;
     private final List<BloodPressureReading> readings = new ArrayList<>();
@@ -97,12 +113,37 @@ public class HomeFragment extends Fragment {
         BluetoothManager bluetoothManager = (BluetoothManager) requireActivity().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
-        Button toggleCalendarButton = root.findViewById(R.id.button_toggle_calendar);
-        CalendarView calendarView = root.findViewById(R.id.calendarView);
+        RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
+        adapter = new BloodPressureAdapter(readings);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        TextView systolicText = root.findViewById(R.id.text_systolic);
-        TextView diastolicText = root.findViewById(R.id.text_diastolic);
-        TextView pulseText = root.findViewById(R.id.text_pulse);
+        wifiStatus = root.findViewById(R.id.wifiStatus);
+        wifiStatusGreen = root.findViewById(R.id.wifiStatusGreen);
+        connectionStatus = root.findViewById(R.id.connectionStatus);
+
+        wifiStatus.setVisibility(View.VISIBLE);
+        wifiStatusGreen.setVisibility(View.GONE);
+
+        systolicGoalTextView = root.findViewById(R.id.systolicGoal);
+        diastolicGoalTextView = root.findViewById(R.id.diastolicGoal);
+
+        goalInfo = root.findViewById(R.id.goalInfo);
+
+        //loadGoals();
+
+        updateGoalsRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (isAdded()) {
+                    loadGoals();
+                    handler2.postDelayed(this, 750); // Delay to ensure loading
+                }
+            }
+        };
+
+        // Start updating goals
+        handler2.post(updateGoalsRunnable);
 
         if (bluetoothAdapter == null) {
             Toast.makeText(getActivity(), "Bluetooth not supported on this device", Toast.LENGTH_SHORT).show();
@@ -117,70 +158,34 @@ public class HomeFragment extends Fragment {
         bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
         checkPermissions();
 
-        RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new BloodPressureAdapter(readings);
-        recyclerView.setAdapter(adapter);
-
         bloodPressureDao = new BloodPressureDao(getActivity());
-
-        loadReadingsData("24 hours", null); // Default upon loading
-
-        Spinner spinnerTimes = root.findViewById(R.id.spinner_times);
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(requireActivity(), R.array.times, android.R.layout.simple_spinner_item);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerTimes.setAdapter(spinnerAdapter);
-
-        spinnerTimes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                String selectedTime = parentView.getItemAtPosition(position).toString();
-                loadReadingsData(selectedTime, null);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) { }
-        });
-
-        toggleCalendarButton.setOnClickListener(v -> {
-            if (calendarView.getVisibility() == View.GONE) {
-                calendarView.setVisibility(View.VISIBLE);
-                systolicText.setVisibility(View.GONE);
-                diastolicText.setVisibility(View.GONE);
-                pulseText.setVisibility(View.GONE);
-                toggleCalendarButton.setText("Hide Calendar");
-            } else {
-                calendarView.setVisibility(View.GONE);
-                systolicText.setVisibility(View.VISIBLE);
-                diastolicText.setVisibility(View.VISIBLE);
-                pulseText.setVisibility(View.VISIBLE);
-                toggleCalendarButton.setText("Show Calendar");
-            }
-        });
-
-        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-            int correctedMonth = month + 1; // correct index
-            @SuppressLint("DefaultLocale") String selectedDate = String.format("%04d-%02d-%02d", year, correctedMonth, dayOfMonth);
-            loadReadingsData(null, selectedDate);
-        });
-
-        toggleCalendarButton.performClick(); // Temp stopgap
-
-        //bloodPressureDao.logAllTimestamps(); // For debugging readings
 
         return root;
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
+        Context context = requireContext();
         Intent intent = new Intent(getActivity(), BluetoothLeService.class);
         requireActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         requireActivity().startService(intent);
         startBLEScan();
         handler.post(scanRunnable);
+        handler2.post(updateGoalsRunnable);
 
         IntentFilter filter = new IntentFilter("com.example.bloodpressure.BLOOD_PRESSURE_UPDATE");
-        requireActivity().registerReceiver(bloodPressureReceiver, filter);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.registerReceiver(
+                    context,
+                    bloodPressureReceiver,
+                    filter,
+                    ContextCompat.RECEIVER_NOT_EXPORTED
+            );
+        } else {
+            context.registerReceiver(bloodPressureReceiver, filter);
+        }
     }
 
     @Override
@@ -193,6 +198,19 @@ public class HomeFragment extends Fragment {
         handler.removeCallbacks(scanRunnable);
 
         requireActivity().unregisterReceiver(bloodPressureReceiver);
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void loadGoals() {
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("BloodPressurePrefs", Context.MODE_PRIVATE);
+
+        int systolicGoal = sharedPreferences.getInt("systolic_goal", 0);
+        int diastolicGoal = sharedPreferences.getInt("diastolic_goal", 0);
+
+        Log.d("HomeFragment", "Loaded Systolic: " + systolicGoal + ", Diastolic: " + diastolicGoal);
+
+        systolicGoalTextView.setText("Systolic Goal: " + systolicGoal);
+        diastolicGoalTextView.setText("Diastolic Goal: " + diastolicGoal);
     }
 
     private void checkPermissions() {
@@ -218,6 +236,9 @@ public class HomeFragment extends Fragment {
     private void startBLEScan() {
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED ||
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            wifiStatus.setVisibility(View.VISIBLE);
+            wifiStatusGreen.setVisibility(View.GONE);
+            connectionStatus.setText("Disconnected");
             Log.d(TAG, "Starting BLE scan");
             bluetoothLeScanner.startScan(scanCallback);
             Toast.makeText(getActivity(), "Scanning for BLE devices...", Toast.LENGTH_SHORT).show();
@@ -225,6 +246,7 @@ public class HomeFragment extends Fragment {
             checkPermissions();
         }
     }
+
     private final ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
@@ -233,11 +255,14 @@ public class HomeFragment extends Fragment {
             String deviceAddress = result.getDevice().getAddress();
             if (deviceName != null && deviceName.contains(TARGET_DEVICE_NAME)) {
                 Log.d(TAG, "Target device found: " + deviceName);
-                bluetoothLeScanner.stopScan(this);
+                bluetoothLeScanner.stopScan(scanCallback);
                 if (isBoundService) {
                     boolean success = bluetoothLeService.connect(deviceAddress);
                     if (success) {
                         Log.i(TAG, "Connected to device: " + deviceAddress);
+                        wifiStatus.setVisibility(View.GONE);
+                        wifiStatusGreen.setVisibility(View.VISIBLE);
+                        connectionStatus.setText("Connected");
                     } else {
                         Log.e(TAG, "Failed to connect to device: " + deviceAddress);
                     }
@@ -285,44 +310,25 @@ public class HomeFragment extends Fragment {
 
                 TextView pulseTextView = requireActivity().findViewById(R.id.text_pulse);
                 pulseTextView.setText("Pulse: " + pulse);
+
+                try {
+                    SharedPreferences sharedPreferences = requireContext().getSharedPreferences("BloodPressurePrefs", Context.MODE_PRIVATE);
+
+                    int systolicGoal = sharedPreferences.getInt("systolic_goal", 0);  // Default to 0 if not set
+                    int diastolicGoal = sharedPreferences.getInt("diastolic_goal", 0);  // Default to 0 if not set
+
+                    if (systolic < systolicGoal || diastolic < diastolicGoal) {
+                        goalInfo.setText(R.string.good_goal);
+                    } else {
+                        goalInfo.setText(R.string.bad_goal);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error retrieving systolic/diastolic goal from SharedPreferences", e);
+                    goalInfo.setText("Invalid goal value");
+                }
             }
         }
     };
-
-    @SuppressLint("NotifyDataSetChanged")
-    private void loadReadingsData(String timeRange, @Nullable String selectedDate) {
-        new Thread(() -> {
-            List<BloodPressureReading> filteredReadings = new ArrayList<>();
-
-            // If a specific date is selected, load readings for that date
-            if (selectedDate != null && !selectedDate.isEmpty()) {
-                filteredReadings = bloodPressureDao.getReadingsCertainDate(selectedDate);
-            } else {
-                // If no date is selected, load readings based on the time range
-                switch (timeRange) {
-                    case "24 hours":
-                        filteredReadings = bloodPressureDao.getReadingsLast24Hours();
-                        break;
-                    case "72 hours":
-                        filteredReadings = bloodPressureDao.getReadingsLast72Hours();
-                        break;
-                    case "1 week":
-                        filteredReadings = bloodPressureDao.getReadingsLast7Days();
-                        break;
-                }
-            }
-
-            // Update the readings list on the main thread
-            List<BloodPressureReading> finalFilteredReadings = filteredReadings;
-            requireActivity().runOnUiThread(() -> {
-                readings.clear();
-                readings.addAll(finalFilteredReadings);
-                adapter.notifyDataSetChanged();
-            });
-        }).start();
-    }
-
-
 
     private final Runnable scanRunnable = new Runnable() {
         @Override

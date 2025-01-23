@@ -28,7 +28,7 @@ public class DashboardViewModel extends ViewModel {
         return mText;
     }
 
-    private void loadAverageReading(){
+    private void loadAverageReading(){ // Old code - usage TBD
         new Thread(() -> {
             List<BloodPressureReading> last8Readings = bloodPressureDao.getLast8Readings();
 

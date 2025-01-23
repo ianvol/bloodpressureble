@@ -96,7 +96,7 @@ public class BPMeasurement {
                 byte[] statusFlag = statusFlagBuffer.array();
 
                 if ((byte)(statusFlag[0] & (byte)0x04) == (byte)0x04) {
-                    bundle.putInt(KEY_IRREGULAR_PULSE_DETECTION, 1);
+                    bundle.putInt(KEY_IRREGULAR_PULSE_DETECTION, 1); // To be implemented
                 } else {
                     bundle.putInt(KEY_IRREGULAR_PULSE_DETECTION, 0);
                 }

@@ -18,8 +18,8 @@
 
 	<FrameLayout
     android:id="@+id/top_left_square_container"
-    android:layout_width="150dp"
-    android:layout_height="150dp"
+    android:layout_width="175dp"
+    android:layout_height="225dp"
     android:layout_margin="8dp"
     android:layout_marginStart="76dp"
     android:layout_marginTop="312dp"
@@ -43,15 +43,15 @@
 			android:text="Measure Blood Pressure"
 			android:textAlignment="center"
 			android:textColor="@android:color/white"
-			android:textSize="18sp"
+			android:textSize="24sp"
 			android:textStyle="bold" />
 </FrameLayout>
 
 
 <FrameLayout
     android:id="@+id/top_right_square_container"
-    android:layout_width="150dp"
-    android:layout_height="150dp"
+    android:layout_width="175dp"
+    android:layout_height="225dp"
     android:layout_margin="8dp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent">
@@ -74,14 +74,14 @@
 		android:text="See graph + average reading"
 		android:textAlignment="center"
 		android:textColor="@android:color/white"
-		android:textSize="18sp"
+		android:textSize="24sp"
 		android:textStyle="bold" />
 </FrameLayout>
 
 <FrameLayout
     android:id="@+id/bottom_left_square_container"
-    android:layout_width="150dp"
-    android:layout_height="150dp"
+    android:layout_width="175dp"
+    android:layout_height="225dp"
     android:layout_margin="8dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintStart_toStartOf="parent">
@@ -104,15 +104,15 @@
 		android:text="See Introduction Again"
 		android:textAlignment="center"
 		android:textColor="@android:color/white"
-		android:textSize="18sp"
+		android:textSize="24sp"
 		android:textStyle="bold" />
 </FrameLayout>
 
 
 <FrameLayout
     android:id="@+id/bottom_right_square_container"
-    android:layout_width="150dp"
-    android:layout_height="150dp"
+    android:layout_width="175dp"
+    android:layout_height="225dp"
     android:layout_margin="8dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent">
@@ -133,7 +133,7 @@
 		android:text="My Details"
 		android:textAlignment="center"
 		android:textColor="@android:color/white"
-		android:textSize="18sp"
+		android:textSize="24sp"
 		android:textStyle="bold" />
 </FrameLayout>
 
@@ -157,7 +157,7 @@
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		android:textAlignment="center"
-		android:textSize="18sp"
+		android:textSize="21sp"
 		android:textColor="@android:color/black"/>
 
 

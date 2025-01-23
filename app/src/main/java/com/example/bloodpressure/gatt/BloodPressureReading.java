@@ -1,7 +1,5 @@
 package com.example.bloodpressure.gatt;
 
-import android.annotation.SuppressLint;
-
 public class BloodPressureReading {
     private final float systolic;
     private final float diastolic;

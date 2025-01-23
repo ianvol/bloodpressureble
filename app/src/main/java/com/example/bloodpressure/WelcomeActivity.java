@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment;
 import com.github.appintro.AppIntro;
 import com.github.appintro.AppIntroFragment;
 
-public class WelcomeActivity extends AppIntro {
+public class WelcomeActivity extends AppIntro { // Can be altered as desired
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -16,22 +16,22 @@ public class WelcomeActivity extends AppIntro {
 
         addSlide(AppIntroFragment.newInstance(
                 "Welcome!",
-                "This is the first slide of the introduction",
-                R.drawable.bananas,
+                "This is your blood pressure measuring app!",
+                R.drawable.measure,
                 getColor(R.color.slide1_background)
         ));
 
         addSlide(AppIntroFragment.newInstance(
                 "Features",
-                "Here are some features of our app",
-                R.drawable.blueberries,
+                "See your average results",
+                R.drawable.results,
                 getColor(R.color.slide2_background)
         ));
 
         addSlide(AppIntroFragment.newInstance(
                 "Get Started",
                 "Let's get started!",
-                R.drawable.peaches,
+                R.drawable.green_tick,
                 getColor(R.color.slide3_background)
         ));
 
